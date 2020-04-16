@@ -25,9 +25,9 @@ def get_vizinhos(solucao, aprendizado):
     vizinhos.append(vizinho_inferior)
     return vizinhos
 
-def hill_climbing(funcao_custo, espaco_solucao):
+def hill_climbing(funcao_custo, solucao_inicial):
     # random.seed(a=0)
-    solucao = 0.1 + (espaco_solucao / 10)
+    solucao = solucao_inicial
 
     custos = []
     count = 1
@@ -55,11 +55,28 @@ def hill_climbing(funcao_custo, espaco_solucao):
 
     return solucao, custos
 
+def get_valor_aleatorio(espaco):
+    inicio = random.random()
+    valor = []
+    
+    for i in espaco:
+        diferenca = i - inicio
+        if diferenca > 0.05 or diferenca < -0.05:
+            valor.append(diferenca)
+
+    if len(valor) == len(espaco):
+        return inicio
+    else:
+        return get_valor_aleatorio(espaco)
+
 custos = []
 solucao = []
+espaco_caracteristicas = []
 
 for i in range(10):
-    solucao_subida_encosta = hill_climbing(funcao_custo, i)
+    espaco_caracteristicas.append(get_valor_aleatorio(espaco_caracteristicas))
+    
+    solucao_subida_encosta = hill_climbing(funcao_custo, espaco_caracteristicas[len(espaco_caracteristicas) - 1])
     solucao.append(solucao_subida_encosta[0])
     custos.append(solucao_subida_encosta[1])
 
