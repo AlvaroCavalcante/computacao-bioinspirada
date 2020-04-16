@@ -82,7 +82,7 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
                 break
 
             custo = funcao_custo(vizinhos[i])
-            probabilidade = pow(math.e, (custo - melhor) / temperatura)
+            probabilidade = pow(math.e, (custo - melhor) / temperatura) #preciso encontrar uma temperatura na mesma escala para não deixar o p sempre altissimo
             
             if custo >= melhor or random.random() < probabilidade:
                 parar_no_plato = parar_no_plato + 1 if solucao_atual == solucao else 0
