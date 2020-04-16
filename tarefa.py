@@ -2,6 +2,7 @@ import math
 import random
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 def plotar_busca(resultados):
     t = np.arange(0.0, len(resultados), 1)
@@ -55,7 +56,7 @@ def hill_climbing(funcao_custo, solucao_inicial):
 
     return solucao, custos
 
-def get_valor_aleatorio(espaco):
+def get_valor_aleatorio(espaco, x=0):
     inicio = random.random()
     valor = []
     
@@ -64,16 +65,16 @@ def get_valor_aleatorio(espaco):
         if diferenca > 0.05 or diferenca < -0.05:
             valor.append(diferenca)
 
-    if len(valor) == len(espaco):
+    if len(valor) == len(espaco) or x > 300:
         return inicio
     else:
-        return get_valor_aleatorio(espaco)
+        return get_valor_aleatorio(espaco, x = x + 1)
 
 custos = []
 solucao = []
 espaco_solucao = []
 
-for i in range(10):
+for i in range(30):
     espaco_solucao.append(get_valor_aleatorio(espaco_solucao))
     
     solucao_subida_encosta = hill_climbing(funcao_custo, espaco_solucao[len(espaco_solucao) - 1])
@@ -124,8 +125,8 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
 
     return solucao, custos
 
-solucao_tempera_simulada = simulated_annealing(funcao_custo)
-custo_tempera_simulada = funcao_custo(solucao_tempera_simulada[0])
+# solucao_tempera_simulada = simulated_annealing(funcao_custo)
+# custo_tempera_simulada = funcao_custo(solucao_tempera_simulada[0])
 
-print('Menor custo', custo_tempera_simulada)
-plotar_busca(solucao_tempera_simulada[1])
+# print('Menor custo', custo_tempera_simulada)
+# plotar_busca(solucao_tempera_simulada[1])
