@@ -25,9 +25,10 @@ def get_vizinhos(solucao, aprendizado):
     vizinhos.append(vizinho_inferior)
     return vizinhos
 
-def hill_climbing(funcao_custo):
+def hill_climbing(funcao_custo, espaco_solucao):
     # random.seed(a=0)
-    solucao = random.random()
+    solucao = 0.1 + (espaco_solucao / 10)
+
     custos = []
     count = 1
     parar_no_plato = 0
@@ -54,11 +55,24 @@ def hill_climbing(funcao_custo):
 
     return solucao, custos
 
-# solucao_subida_encosta = hill_climbing(funcao_custo)
+custos = []
+solucao = []
 
-# print('Valor X:', solucao_subida_encosta[0])
-# print('custos', solucao_subida_encosta[1])
-# plotar_busca(solucao_subida_encosta[1])
+for i in range(10):
+    solucao_subida_encosta = hill_climbing(funcao_custo, i)
+    solucao.append(solucao_subida_encosta[0])
+    custos.append(solucao_subida_encosta[1])
+
+    if len(custos) > 1:
+        if max(custos[1]) > max(custos[0]):
+            custos.pop(0)
+        else:
+            custos.pop(1)
+
+
+print('Valor X:', solucao_subida_encosta[0])
+print('custos', solucao_subida_encosta[1])
+plotar_busca(solucao_subida_encosta[1])
 
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
