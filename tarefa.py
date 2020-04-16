@@ -54,47 +54,47 @@ def hill_climbing(funcao_custo):
 
     return solucao, custos
 
-solucao_subida_encosta = hill_climbing(funcao_custo)
+# solucao_subida_encosta = hill_climbing(funcao_custo)
 
-print('Valor X:', solucao_subida_encosta[0])
-print('custos', solucao_subida_encosta[1])
-plotar_busca(solucao_subida_encosta[1])
+# print('Valor X:', solucao_subida_encosta[0])
+# print('custos', solucao_subida_encosta[1])
+# plotar_busca(solucao_subida_encosta[1])
 
 
-# def simulated_annealing(dominio, funcao_custo, temperatura = 10000.0, resfriamento = 0.95, passo = 1):
-#     #random.seed(a=0)
-#     solucao = random.random()
-#     custos = []
-#     count = 1
-#     parar_no_plato = 0
+def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
+    #random.seed(a=0)
+    solucao = random.random()
+    custos = []
+    count = 1
+    parar_no_plato = 0
 
-#     while temperatura > 0.1:
-#         vizinhos = get_vizinhos(solucao, count)
+    while temperatura > 0.1:
+        vizinhos = get_vizinhos(solucao, count)
         
-#         atual = funcao_custo(solucao)
-#         melhor = atual 
-#         solucao_atual = solucao
-#         custos.append(atual)
+        atual = funcao_custo(solucao)
+        melhor = atual 
+        solucao_atual = solucao
+        custos.append(atual)
 
-#         for i in range(len(vizinhos)):
+        for i in range(len(vizinhos)):
             
-#             if parar_no_plato == 20:
-#                 break
+            if parar_no_plato == 20:
+                break
 
-#             custo = funcao_custo(vizinhos[i])
-#             probabilidade = pow(math.e, (-custo - melhor) / temperatura)
+            custo = funcao_custo(vizinhos[i])
+            probabilidade = pow(math.e, (custo - melhor) / temperatura)
             
-#             if custo >= melhor or random.random() < probabilidade:
-#                 parar_no_plato = parar_no_plato + 1 if custo == melhor else 0
-#                 melhor = custo
-#                 solucao = vizinhos[i]
+            if custo >= melhor or random.random() < probabilidade:
+                parar_no_plato = parar_no_plato + 1 if solucao_atual == solucao else 0
+                melhor = custo
+                solucao = vizinhos[i]
                
-#         temperatura = temperatura * resfriamento
+        temperatura = temperatura * resfriamento
 
-#     return solucao, custos
+    return solucao, custos
 
-# solucao_tempera_simulada = simulated_annealing([0, 1], funcao_custo)
-# custo_tempera_simulada = funcao_custo(solucao_tempera_simulada[0])
+solucao_tempera_simulada = simulated_annealing(funcao_custo)
+custo_tempera_simulada = funcao_custo(solucao_tempera_simulada[0])
 
-# print('Menor custo', custo_tempera_simulada)
-# plotar_busca(solucao_tempera_simulada[1])
+print('Menor custo', custo_tempera_simulada)
+plotar_busca(solucao_tempera_simulada[1])
