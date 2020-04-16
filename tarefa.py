@@ -50,7 +50,7 @@ def hill_climbing(funcao_custo, solucao_inicial):
 
         count += 1
         if melhor == atual and solucao_atual == solucao or parar_no_plato == 20:
-            print('plato' if parar_no_plato == 20 else 'sem melhoria')
+            if parar_no_plato == 20: print('plato')
             break
 
     return solucao, custos
@@ -71,12 +71,12 @@ def get_valor_aleatorio(espaco):
 
 custos = []
 solucao = []
-espaco_caracteristicas = []
+espaco_solucao = []
 
 for i in range(10):
-    espaco_caracteristicas.append(get_valor_aleatorio(espaco_caracteristicas))
+    espaco_solucao.append(get_valor_aleatorio(espaco_solucao))
     
-    solucao_subida_encosta = hill_climbing(funcao_custo, espaco_caracteristicas[len(espaco_caracteristicas) - 1])
+    solucao_subida_encosta = hill_climbing(funcao_custo, espaco_solucao[len(espaco_solucao) - 1])
     solucao.append(solucao_subida_encosta[0])
     custos.append(solucao_subida_encosta[1])
 
