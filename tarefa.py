@@ -81,18 +81,17 @@ for i in range(30):
     custos.append(max(solucao_subida_encosta[1]))
 
 
-print('Valor X:', solucao[custos.index(max(custos))])
-print('maior custo', max(custos))
-print('média', np.mean(custos))
-print('desvio', np.std(custos))
-plotar_busca(custos)
+# print('Valor X:', solucao[custos.index(max(custos))])
+# print('maior custo', max(custos))
+# print('média', np.mean(custos))
+# print('desvio', np.std(custos))
+# plotar_busca(custos)
 
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     #random.seed(a=0)
     solucao = random.random()
     custos = []
-    count = 0
     parar_no_plato = 0
 
     while temperatura > 0.1:
@@ -149,7 +148,7 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
     
     for i in range(geracoes):
         custos = [(funcao_custo(individuo), individuo) for individuo in populacao]
-        custos.sort()
+        custos.sort(reverse=True)
         individuos_ordenados = [individuos for (custo, individuos) in custos]
         
         populacao = individuos_ordenados[0:numero_elitismo]
@@ -163,6 +162,7 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
                 individuo2 = random.randint(0, numero_elitismo)
                 populacao.append(crossover(individuos_ordenados[individuo1], 
                                            individuos_ordenados[individuo2]))
-    return custos[0][1]
+    return custos[0][0], custos[0][1]
 
-# genetico(funcao_custo)
+melhor_custo, x = genetico(funcao_custo)
+print(melhor_custo, x)
