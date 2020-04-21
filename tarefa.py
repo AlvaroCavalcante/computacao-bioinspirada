@@ -130,3 +130,44 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
 
 # print('Menor custo', custo_tempera_simulada)
 # plotar_busca(solucao_tempera_simulada[1])
+
+def mutacao(solucao):
+    constante = 0.005
+
+    if random.random() < 0.5:
+        mutante = solucao - constante if solucao - constante > 0 else solucao
+    else:
+        mutante = solucao + constante if solucao + constante < 1 else solucao
+    
+    return mutante
+
+def crossover(solucao1, solucao2):
+    crossed = (solucao1 + solucao2) / 2
+    return crossed
+
+def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.2, geracoes=100):
+    populacao = []
+    for i in range(tamanho_populacao):
+        populacao.append(random.random())
+    
+    numero_elitismo = int(elitismo * tamanho_populacao)
+    
+    for i in range(geracoes):
+        custos = [(funcao_custo(individuo), individuo) for individuo in populacao]
+        custos.sort()
+        individuos_ordenados = [individuos for (custo, individuos) in custos]
+        
+        populacao = individuos_ordenados[0:numero_elitismo]
+    
+        while len(populacao) < tamanho_populacao:
+            if random.random() < p_mutacao:
+                individuo_selecionado = random.randint(0, numero_elitismo)
+                populacao.append(mutacao(individuos_ordenados[individuo_selecionado]))
+            else:
+                individuo1 = random.randint(0, numero_elitismo)
+                individuo2 = random.randint(0, numero_elitismo)
+                populacao.append(crossover(individuos_ordenados[individuo1], 
+                                           individuos_ordenados[individuo2]))
+    return custos[0][1]
+
+# genetico(funcao_custo)
