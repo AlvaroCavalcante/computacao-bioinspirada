@@ -15,10 +15,9 @@ def funcao_custo(x):
     custo = 2 ** -2 * (x - 0.1 / 0.9) ** 2 * (math.sin(5 * math.pi * x))** 6
     return custo
 
-def get_vizinhos(solucao, aprendizado):
+def get_vizinhos(solucao):
     vizinhos = []
-    aprendizado = aprendizado / 10 if aprendizado >= 10 else 1
-    constante = 0.005 / aprendizado
+    constante = 0.05
     vizinho_superior = solucao + constante if solucao + constante < 1 else solucao
     vizinho_inferior = solucao - constante if solucao - constante > 0 else solucao
     
@@ -31,11 +30,11 @@ def hill_climbing(funcao_custo, solucao_inicial):
     solucao = solucao_inicial
 
     custos = []
-    count = 1
+    count = 0
     parar_no_plato = 0
 
     while count <= 400:
-        vizinhos = get_vizinhos(solucao, count)
+        vizinhos = get_vizinhos(solucao)
         
         atual = funcao_custo(solucao)
         melhor = atual 
@@ -79,29 +78,25 @@ for i in range(30):
     
     solucao_subida_encosta = hill_climbing(funcao_custo, espaco_solucao[len(espaco_solucao) - 1])
     solucao.append(solucao_subida_encosta[0])
-    custos.append(solucao_subida_encosta[1])
-
-    if len(custos) > 1:
-        if max(custos[1]) > max(custos[0]):
-            custos.pop(0)
-        else:
-            custos.pop(1)
+    custos.append(max(solucao_subida_encosta[1]))
 
 
-print('Valor X:', solucao_subida_encosta[0])
-print('custos', solucao_subida_encosta[1])
-plotar_busca(solucao_subida_encosta[1])
+print('Valor X:', solucao[custos.index(max(custos))])
+print('maior custo', max(custos))
+print('média', np.mean(custos))
+print('desvio', np.std(custos))
+plotar_busca(custos)
 
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     #random.seed(a=0)
     solucao = random.random()
     custos = []
-    count = 1
+    count = 0
     parar_no_plato = 0
 
     while temperatura > 0.1:
-        vizinhos = get_vizinhos(solucao, count)
+        vizinhos = get_vizinhos(solucao)
         
         atual = funcao_custo(solucao)
         melhor = atual 
