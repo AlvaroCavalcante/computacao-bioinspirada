@@ -12,7 +12,7 @@ def plotar_busca(resultados):
     plt.show()
 
 def funcao_custo(x):
-    custo = 2 ** -2 * (x - 0.1 / 0.9) ** 2 * (math.sin(5 * math.pi * x))** 6
+    custo = 2 ** (-2 *((((x-0.1) / 0.9)) ** 2)) * ((math.sin(5*math.pi*x)) ** 6)
     return custo
 
 def get_vizinhos(solucao):
