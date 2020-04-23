@@ -15,9 +15,9 @@ def funcao_custo(x):
     custo = 2 ** (-2 *((((x-0.1) / 0.9)) ** 2)) * ((math.sin(5*math.pi*x)) ** 6)
     return custo
 
-def get_vizinhos(solucao):
+def get_vizinhos(solucao, tx_aprendizado):
     vizinhos = []
-    constante = 0.05
+    constante = 0.005 / tx_aprendizado
     vizinho_superior = solucao + constante if solucao + constante < 1 else solucao
     vizinho_inferior = solucao - constante if solucao - constante > 0 else solucao
     
@@ -25,7 +25,7 @@ def get_vizinhos(solucao):
     vizinhos.append(vizinho_inferior)
     return vizinhos
 
-def hill_climbing(funcao_custo, solucao_inicial):
+def hill_climbing(funcao_custo, solucao_inicial, tx_aprendizado):
     # random.seed(a=0)
     solucao = solucao_inicial
 
@@ -34,7 +34,7 @@ def hill_climbing(funcao_custo, solucao_inicial):
     parar_no_plato = 0
 
     while count <= 400:
-        vizinhos = get_vizinhos(solucao)
+        vizinhos = get_vizinhos(solucao, tx_aprendizado)
         
         atual = funcao_custo(solucao)
         melhor = atual 
@@ -74,18 +74,18 @@ solucao = []
 espaco_solucao = []
 
 for i in range(30):
-    espaco_solucao.append(get_valor_aleatorio(espaco_solucao))
+    # espaco_solucao.append(get_valor_aleatorio(espaco_solucao)) não gerou melhoras
     
-    solucao_subida_encosta = hill_climbing(funcao_custo, espaco_solucao[len(espaco_solucao) - 1])
+    solucao_subida_encosta = hill_climbing(funcao_custo, solucao[custos.index(max(custos))] if len(custos) > 0 else random.random(), i + 1)
     solucao.append(solucao_subida_encosta[0])
     custos.append(max(solucao_subida_encosta[1]))
 
 
-# print('Valor X:', solucao[custos.index(max(custos))])
-# print('maior custo', max(custos))
-# print('média', np.mean(custos))
-# print('desvio', np.std(custos))
-# plotar_busca(custos)
+print('Valor X:', solucao[custos.index(max(custos))])
+print('maior custo', max(custos))
+print('média', np.mean(custos))
+print('desvio', np.std(custos))
+plotar_busca(custos)
 
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
@@ -95,7 +95,7 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     parar_no_plato = 0
 
     while temperatura > 0.1:
-        vizinhos = get_vizinhos(solucao)
+        #vizinhos = get_vizinhos(solucao)
         
         atual = funcao_custo(solucao)
         melhor = atual 
@@ -164,5 +164,5 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
                                            individuos_ordenados[individuo2]))
     return custos[0][0], custos[0][1]
 
-melhor_custo, x = genetico(funcao_custo)
-print(melhor_custo, x)
+# melhor_custo, x = genetico(funcao_custo)
+# print(melhor_custo, x)
