@@ -5,10 +5,10 @@ import numpy as np
 import sys
 
 def exibir_sumario_resultados(solucao, custos):
-    print('Valor X:', solucao[custos.index(max(custos))])
-    print('maior custo', max(custos))
-    print('média', np.mean(custos))
-    print('desvio', np.std(custos))
+    print('Valor X que gerou melhor resultado:', solucao[custos.index(max(custos))])
+    print('Maior custo:', max(custos))
+    print('Média de custos:', np.mean(custos))
+    print('Desvio padrão:', np.std(custos))
     plotar_busca(custos)
 
 def plotar_busca(resultados):
@@ -87,10 +87,20 @@ for i in range(30):
     solucao.append(solucao_subida_encosta[0])
     custos.append(max(solucao_subida_encosta[1]))
 
-exibir_sumario_resultados(solucao, custos)
+#exibir_sumario_resultados(solucao, custos)
+
+def get_iteracoes(temperatura, resfriamento):
+    count = 0
+    while temperatura > 0.1:
+        temperatura = temperatura * resfriamento
+        count += 1
+    return count
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     #random.seed(a=0)
+    iteracoes = get_iteracoes(temperatura, resfriamento)
+    queda_prob = 100 / iteracoes
+    probabilidade = 100
     solucao = random.random()
     custos = []
     parar_no_plato = 0
@@ -109,7 +119,8 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
                 break
 
             custo = funcao_custo(vizinhos[i])
-            probabilidade = pow(math.e, (custo - melhor) / temperatura) #preciso encontrar uma temperatura na mesma escala para não deixar o p sempre altissimo
+            #probabilidade = pow(math.e, (custo - melhor) / temperatura) 
+            probabilidade = probabilidade - queda_prob 
             
             if custo >= melhor or random.random() < probabilidade:
                 parar_no_plato = parar_no_plato + 1 if solucao_atual == solucao else 0
@@ -123,12 +134,12 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
 custos = []
 solucao = []
 
-for i in range(30):
+for i in range(5):
     solucao_tempera_simulada = simulated_annealing(funcao_custo)
     solucao.append(solucao_tempera_simulada[0])
     custos.append(max(solucao_tempera_simulada[1]))
-
-exibir_sumario_resultados(solucao, custos)
+    plotar_busca(solucao_tempera_simulada[1])
+#exibir_sumario_resultados(solucao, custos)
 
 def mutacao(solucao):
     constante = 0.005
