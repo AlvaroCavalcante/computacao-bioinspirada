@@ -4,6 +4,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
+def exibir_sumario_resultados(solucao, custos):
+    print('Valor X:', solucao[custos.index(max(custos))])
+    print('maior custo', max(custos))
+    print('média', np.mean(custos))
+    print('desvio', np.std(custos))
+    plotar_busca(custos)
+
 def plotar_busca(resultados):
     t = np.arange(0.0, len(resultados), 1)
     
@@ -15,7 +22,7 @@ def funcao_custo(x):
     custo = 2 ** (-2 *((((x-0.1) / 0.9)) ** 2)) * ((math.sin(5*math.pi*x)) ** 6)
     return custo
 
-def get_vizinhos(solucao, tx_aprendizado):
+def get_vizinhos(solucao, tx_aprendizado = 1):
     vizinhos = []
     constante = 0.005 / tx_aprendizado
     vizinho_superior = solucao + constante if solucao + constante < 1 else solucao
@@ -80,13 +87,7 @@ for i in range(30):
     solucao.append(solucao_subida_encosta[0])
     custos.append(max(solucao_subida_encosta[1]))
 
-
-print('Valor X:', solucao[custos.index(max(custos))])
-print('maior custo', max(custos))
-print('média', np.mean(custos))
-print('desvio', np.std(custos))
-plotar_busca(custos)
-
+exibir_sumario_resultados(solucao, custos)
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     #random.seed(a=0)
@@ -95,7 +96,7 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     parar_no_plato = 0
 
     while temperatura > 0.1:
-        #vizinhos = get_vizinhos(solucao)
+        vizinhos = get_vizinhos(solucao)
         
         atual = funcao_custo(solucao)
         melhor = atual 
@@ -119,11 +120,15 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
 
     return solucao, custos
 
-# solucao_tempera_simulada = simulated_annealing(funcao_custo)
-# custo_tempera_simulada = funcao_custo(solucao_tempera_simulada[0])
+custos = []
+solucao = []
 
-# print('Menor custo', custo_tempera_simulada)
-# plotar_busca(solucao_tempera_simulada[1])
+for i in range(30):
+    solucao_tempera_simulada = simulated_annealing(funcao_custo)
+    solucao.append(solucao_tempera_simulada[0])
+    custos.append(max(solucao_tempera_simulada[1]))
+
+exibir_sumario_resultados(solucao, custos)
 
 def mutacao(solucao):
     constante = 0.005
