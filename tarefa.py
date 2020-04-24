@@ -32,8 +32,7 @@ def get_vizinhos(solucao, tx_aprendizado = 1):
     vizinhos.append(vizinho_inferior)
     return vizinhos
 
-def hill_climbing(funcao_custo, solucao_inicial, tx_aprendizado):
-    # random.seed(a=0)
+def hill_climbing(funcao_custo, solucao_inicial, tx_aprendizado = 1):
     solucao = solucao_inicial
 
     custos = []
@@ -76,18 +75,22 @@ def get_valor_aleatorio(espaco, x=0):
     else:
         return get_valor_aleatorio(espaco, x = x + 1)
 
-custos = []
-solucao = []
-espaco_solucao = []
-
-for i in range(30):
-    # espaco_solucao.append(get_valor_aleatorio(espaco_solucao)) não gerou melhoras
+def executar_hill_climbing(funcao_custo, iteracoes, espaco_minimo = False, get_melhor_resultado = False):
+    custos = []
+    solucao = []
+    espaco_solucao = []
     
-    solucao_subida_encosta = hill_climbing(funcao_custo, solucao[custos.index(max(custos))] if len(custos) > 0 else random.random(), i + 1)
-    solucao.append(solucao_subida_encosta[0])
-    custos.append(max(solucao_subida_encosta[1]))
+    for i in range(iteracoes):
+        espaco_solucao.append(get_valor_aleatorio(espaco_solucao))
+        valor_inicial = random.random() if espaco_minimo == False else espaco_solucao[len(espaco_solucao) - 1]   
+        solucao_subida_encosta = hill_climbing(funcao_custo, valor_inicial) if get_melhor_resultado == False else hill_climbing(funcao_custo, solucao[custos.index(max(custos))] if len(custos) > 0 else random.random(), i + 1)
+        solucao.append(solucao_subida_encosta[0])
+        custos.append(max(solucao_subida_encosta[1]))
+    
+    return solucao, custos
 
-#exibir_sumario_resultados(solucao, custos)
+solucao, custos = executar_hill_climbing(funcao_custo, 30)
+exibir_sumario_resultados(solucao, custos)
 
 def get_iteracoes(temperatura, resfriamento):
     count = 0
@@ -97,10 +100,9 @@ def get_iteracoes(temperatura, resfriamento):
     return count
 
 def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
-    #random.seed(a=0)
     iteracoes = get_iteracoes(temperatura, resfriamento)
-    queda_prob = 100 / iteracoes
     probabilidade = 100
+    queda_prob = probabilidade / iteracoes
     solucao = random.random()
     custos = []
     parar_no_plato = 0
@@ -134,11 +136,11 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
 custos = []
 solucao = []
 
-for i in range(5):
-    solucao_tempera_simulada = simulated_annealing(funcao_custo)
-    solucao.append(solucao_tempera_simulada[0])
-    custos.append(max(solucao_tempera_simulada[1]))
-    plotar_busca(solucao_tempera_simulada[1])
+# for i in range(5):
+#     solucao_tempera_simulada = simulated_annealing(funcao_custo)
+#     solucao.append(solucao_tempera_simulada[0])
+#     custos.append(max(solucao_tempera_simulada[1]))
+#     plotar_busca(solucao_tempera_simulada[1])
 #exibir_sumario_resultados(solucao, custos)
 
 def mutacao(solucao):
@@ -168,7 +170,8 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
         individuos_ordenados = [individuos for (custo, individuos) in custos]
         
         populacao = individuos_ordenados[0:numero_elitismo]
-    
+        # aqui estou pegando a população dos melhores e criando uma nova geração a partir dela
+        # eu poderia ao invés de selecionar apenas os melhores, fazer uma roleta. 
         while len(populacao) < tamanho_populacao:
             if random.random() < p_mutacao:
                 individuo_selecionado = random.randint(0, numero_elitismo)
@@ -180,5 +183,12 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
                                            individuos_ordenados[individuo2]))
     return custos[0][0], custos[0][1]
 
-# melhor_custo, x = genetico(funcao_custo)
-# print(melhor_custo, x)
+custos = []
+solucao = []
+
+for i in range(30):
+    solucao_algoritmo_genetico = genetico(funcao_custo)
+    solucao.append(solucao_algoritmo_genetico[1])
+    custos.append(solucao_algoritmo_genetico[0])
+
+exibir_sumario_resultados(solucao, custos)
