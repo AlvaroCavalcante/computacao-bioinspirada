@@ -170,7 +170,13 @@ def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
         
         return nova_populacao
 
-def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.2, geracoes=100):
+def get_melhores_individuos(custos, n_elitismo):
+    custos.sort(reverse=True)
+    individuos_ordenados = [individuos for (custo, individuos) in custos]
+    elite = individuos_ordenados[0:n_elitismo]
+    return elite
+    
+def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
     populacao = []
     for i in range(tamanho_populacao):
         populacao.append(random.random())
@@ -179,19 +185,21 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
     
     for i in range(geracoes):
         custos = [(funcao_custo(individuo), individuo) for individuo in populacao]
-        individuos_ordenados = [individuos for (custo, individuos) in custos]
         
-        populacao = get_populacao_torneio(custos, numero_elitismo)
-
+        populacao = get_melhores_individuos(custos, numero_elitismo) 
+    
+        individuos_escolhidos = get_populacao_torneio(custos, (
+                                tamanho_populacao - numero_elitismo) // 2)
+    
         while len(populacao) < tamanho_populacao:
             if random.random() < p_mutacao:
-                individuo_selecionado = random.randint(0, numero_elitismo)
-                populacao.append(mutacao(individuos_ordenados[individuo_selecionado]))
+                individuo_selecionado = random.randint(0, len(individuos_escolhidos) -1)
+                populacao.append(mutacao(individuos_escolhidos[individuo_selecionado]))
             else:
-                individuo1 = random.randint(0, numero_elitismo)
-                individuo2 = random.randint(0, numero_elitismo)
-                populacao.append(crossover(individuos_ordenados[individuo1], 
-                                           individuos_ordenados[individuo2]))
+                individuo1 = random.randint(0, len(individuos_escolhidos) -1)
+                individuo2 = random.randint(0, len(individuos_escolhidos) -1)
+                populacao.append(crossover(individuos_escolhidos[individuo1], 
+                                           individuos_escolhidos[individuo2]))
     return custos[0][0], custos[0][1]
 
 custos = []
