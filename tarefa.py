@@ -89,8 +89,8 @@ def executar_hill_climbing(funcao_custo, iteracoes, espaco_minimo = False, get_m
     
     return solucao, custos
 
-solucao, custos = executar_hill_climbing(funcao_custo, 30)
-exibir_sumario_resultados(solucao, custos)
+# solucao, custos = executar_hill_climbing(funcao_custo, 30)
+# exibir_sumario_resultados(solucao, custos)
 
 def get_iteracoes(temperatura, resfriamento):
     count = 0
@@ -157,6 +157,19 @@ def crossover(solucao1, solucao2):
     crossed = (solucao1 + solucao2) / 2
     return crossed
 
+def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
+        nova_populacao = []
+        while len(nova_populacao) < numero_elitismo:
+            torneio = []
+
+            for i in range(n_competidores):
+                torneio.append(populacao[random.randint(0, len(populacao) - 1)])
+            
+            torneio.sort(reverse=True)
+            nova_populacao.append(torneio[0][1])
+        
+        return nova_populacao
+
 def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.2, geracoes=100):
     populacao = []
     for i in range(tamanho_populacao):
@@ -166,12 +179,10 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
     
     for i in range(geracoes):
         custos = [(funcao_custo(individuo), individuo) for individuo in populacao]
-        custos.sort(reverse=True)
         individuos_ordenados = [individuos for (custo, individuos) in custos]
         
-        populacao = individuos_ordenados[0:numero_elitismo]
-        # aqui estou pegando a população dos melhores e criando uma nova geração a partir dela
-        # eu poderia ao invés de selecionar apenas os melhores, fazer uma roleta. 
+        populacao = get_populacao_torneio(custos, numero_elitismo)
+
         while len(populacao) < tamanho_populacao:
             if random.random() < p_mutacao:
                 individuo_selecionado = random.randint(0, numero_elitismo)
