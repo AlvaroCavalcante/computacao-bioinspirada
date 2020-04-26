@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-def exibir_sumario_resultados(solucao, custos):
-    print('Valor X que gerou melhor resultado:', solucao[custos.index(max(custos))])
-    print('Maior custo:', max(custos))
+def exibir_sumario_resultados(solucao, custos, objetivo = max):
+    print('Valor que gerou melhor resultado:', solucao[custos.index(objetivo(custos))])
+    print('Melhor custo:', objetivo(custos))
     print('Média de custos:', np.mean(custos))
     print('Desvio padrão:', np.std(custos))
     plotar_busca(custos)
@@ -20,6 +20,10 @@ def plotar_busca(resultados):
 
 def funcao_custo(x):
     custo = 2 ** (-2 *((((x-0.1) / 0.9)) ** 2)) * ((math.sin(5*math.pi*x)) ** 6)
+    return custo
+
+def funcao_custo_2(valor):
+    custo = (1-valor[0])**2 + (100 * (valor[1] - valor[0]**2)**2)
     return custo
 
 def get_vizinhos(solucao, tx_aprendizado = 1):
@@ -144,17 +148,19 @@ solucao = []
 #exibir_sumario_resultados(solucao, custos)
 
 def mutacao(solucao):
-    constante = 0.005
+    constante = 0.05
 
     if random.random() < 0.5:
-        mutante = solucao - constante if solucao - constante > 0 else solucao
+        mutante = (solucao[0] - constante, solucao[1] - constante) if (solucao[0] - constante >= -5 and 
+        solucao[1] - constante >= -5) else solucao
     else:
-        mutante = solucao + constante if solucao + constante < 1 else solucao
+        mutante = (solucao[0] + constante, solucao[1] + constante) if (solucao[0] + constante <= 5 and 
+        solucao[1] + constante <= 5) else solucao
     
     return mutante
 
 def crossover(solucao1, solucao2):
-    crossed = (solucao1 + solucao2) / 2
+    crossed = ((solucao1[0] + solucao2[0]) / 2, (solucao1[1] + solucao2[1]) / 2)
     return crossed
 
 def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
@@ -165,21 +171,22 @@ def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
             for i in range(n_competidores):
                 torneio.append(populacao[random.randint(0, len(populacao) - 1)])
             
-            torneio.sort(reverse=True)
+            torneio.sort(reverse=False)
             nova_populacao.append(torneio[0][1])
         
         return nova_populacao
 
 def get_melhores_individuos(custos, n_elitismo):
-    custos.sort(reverse=True)
+    custos.sort(reverse=False)
     individuos_ordenados = [individuos for (custo, individuos) in custos]
     elite = individuos_ordenados[0:n_elitismo]
     return elite
-    
-def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
+
+def genetico(funcao_custo, dominio = [(0,1)], tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
     populacao = []
     for i in range(tamanho_populacao):
-        populacao.append(random.random())
+        solucao = [random.uniform(dominio[i][0], dominio[i][1]) for i in range(len(dominio))]
+        populacao.append(tuple(solucao)) 
     
     numero_elitismo = int(elitismo * tamanho_populacao)
     
@@ -204,10 +211,11 @@ def genetico(funcao_custo, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0
 
 custos = []
 solucao = []
+dominio = [(-5, 5), (-5, 5)]
 
 for i in range(30):
-    solucao_algoritmo_genetico = genetico(funcao_custo)
+    solucao_algoritmo_genetico = genetico(funcao_custo_2, dominio)
     solucao.append(solucao_algoritmo_genetico[1])
     custos.append(solucao_algoritmo_genetico[0])
 
-exibir_sumario_resultados(solucao, custos)
+exibir_sumario_resultados(solucao, custos, min)
