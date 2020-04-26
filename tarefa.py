@@ -19,6 +19,9 @@ def plotar_busca(resultados):
     plt.show()
 
 def funcao_custo(x):
+    if isinstance(x, tuple):
+        x = x[0]
+
     custo = 2 ** (-2 *((((x-0.1) / 0.9)) ** 2)) * ((math.sin(5*math.pi*x)) ** 6)
     return custo
 
@@ -154,7 +157,6 @@ def mutacao(solucao):
     constante = 0.05
     mutante = []
 
-    solucao = (-2.196106163428394, 2.478116796306918)
     for i in range(len(solucao)):
         if random.random() < 0.5:
             if ((solucao[i] - constante) >= -5):
@@ -173,7 +175,7 @@ def crossover(solucao1, solucao2):
     crossed = [(solucao1[i] + solucao2[i]) / 2 for i in range(len(solucao1))]
     return tuple(crossed)
 
-def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
+def get_populacao_torneio(populacao, numero_elitismo, objetivo, n_competidores = 3):
         nova_populacao = []
         while len(nova_populacao) < numero_elitismo:
             torneio = []
@@ -181,18 +183,18 @@ def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
             for i in range(n_competidores):
                 torneio.append(populacao[random.randint(0, len(populacao) - 1)])
             
-            torneio.sort(reverse=False) #False para pegar menor valor
+            torneio.sort(reverse=objetivo)
             nova_populacao.append(torneio[0][1])
         
         return nova_populacao
 
-def get_melhores_individuos(custos, n_elitismo):
-    custos.sort(reverse=False) #menores valores
+def get_melhores_individuos(custos, n_elitismo, objetivo):
+    custos.sort(reverse=objetivo)
     individuos_ordenados = [individuos for (custo, individuos) in custos]
     elite = individuos_ordenados[0:n_elitismo]
     return elite
 
-def genetico(funcao_custo, dominio = [(0,1)], tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
+def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
     populacao = []
     for i in range(tamanho_populacao):
         solucao = [random.uniform(dominio[i][0], dominio[i][1]) for i in range(len(dominio))]
@@ -203,10 +205,10 @@ def genetico(funcao_custo, dominio = [(0,1)], tamanho_populacao = 50, p_mutacao 
     for i in range(geracoes):
         custos = [(funcao_custo(individuo), individuo) for individuo in populacao]
         
-        populacao = get_melhores_individuos(custos, numero_elitismo) 
+        populacao = get_melhores_individuos(custos, numero_elitismo, objetivo) 
     
         individuos_escolhidos = get_populacao_torneio(custos, (
-                                tamanho_populacao - numero_elitismo) // 2)
+                                tamanho_populacao - numero_elitismo) // 2, objetivo)
     
         while len(populacao) < tamanho_populacao:
             if random.random() < p_mutacao:
@@ -222,10 +224,11 @@ def genetico(funcao_custo, dominio = [(0,1)], tamanho_populacao = 50, p_mutacao 
 custos = []
 solucao = []
 dominio = [(-5, 5), (-5, 5)]
+dominio_2 = [(0, 1)]
 
 for i in range(30):
-    solucao_algoritmo_genetico = genetico(funcao_custo_2, dominio)
+    solucao_algoritmo_genetico = genetico(funcao_custo, dominio_2, True)
     solucao.append(solucao_algoritmo_genetico[1])
     custos.append(solucao_algoritmo_genetico[0])
 
-exibir_sumario_resultados(solucao, custos, min)
+exibir_sumario_resultados(solucao, custos, max)
