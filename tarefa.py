@@ -23,7 +23,10 @@ def funcao_custo(x):
     return custo
 
 def funcao_custo_2(valor):
-    custo = (1-valor[0])**2 + (100 * (valor[1] - valor[0]**2)**2)
+    x = valor[0]
+    y = valor[1]
+
+    custo = (1-x)**2 + (100 * (y - x**2)**2)
     return custo
 
 def get_vizinhos(solucao, tx_aprendizado = 1):
@@ -160,8 +163,8 @@ def mutacao(solucao):
     return mutante
 
 def crossover(solucao1, solucao2):
-    crossed = ((solucao1[0] + solucao2[0]) / 2, (solucao1[1] + solucao2[1]) / 2)
-    return crossed
+    crossed = [(solucao1[i] + solucao2[i]) / 2 for i in range(len(solucao1))]
+    return tuple(crossed)
 
 def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
         nova_populacao = []
@@ -171,13 +174,13 @@ def get_populacao_torneio(populacao, numero_elitismo, n_competidores = 3):
             for i in range(n_competidores):
                 torneio.append(populacao[random.randint(0, len(populacao) - 1)])
             
-            torneio.sort(reverse=False)
+            torneio.sort(reverse=False) #False para pegar menor valor
             nova_populacao.append(torneio[0][1])
         
         return nova_populacao
 
 def get_melhores_individuos(custos, n_elitismo):
-    custos.sort(reverse=False)
+    custos.sort(reverse=False) #menores valores
     individuos_ordenados = [individuos for (custo, individuos) in custos]
     elite = individuos_ordenados[0:n_elitismo]
     return elite
