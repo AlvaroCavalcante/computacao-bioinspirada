@@ -152,15 +152,22 @@ solucao = []
 
 def mutacao(solucao):
     constante = 0.05
+    mutante = []
 
-    if random.random() < 0.5:
-        mutante = (solucao[0] - constante, solucao[1] - constante) if (solucao[0] - constante >= -5 and 
-        solucao[1] - constante >= -5) else solucao
-    else:
-        mutante = (solucao[0] + constante, solucao[1] + constante) if (solucao[0] + constante <= 5 and 
-        solucao[1] + constante <= 5) else solucao
-    
-    return mutante
+    solucao = (-2.196106163428394, 2.478116796306918)
+    for i in range(len(solucao)):
+        if random.random() < 0.5:
+            if ((solucao[i] - constante) >= -5):
+                mutante.append(solucao[i] - constante)
+            else:
+                mutante.append(solucao[i]) 
+        else:
+            if ((solucao[i] + constante) <= 5):
+                mutante.append(solucao[i] - constante)
+            else:
+                mutante.append(solucao[i]) 
+
+    return tuple(mutante)
 
 def crossover(solucao1, solucao2):
     crossed = [(solucao1[i] + solucao2[i]) / 2 for i in range(len(solucao1))]
