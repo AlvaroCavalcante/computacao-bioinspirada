@@ -196,6 +196,20 @@ def get_populacao_torneio(populacao, numero_elitismo, objetivo, n_competidores =
         
         return nova_populacao
 
+def get_populacao(tamanho_populacao, dominio, numeros_inteiros = False):
+    populacao = []
+    for i in range(tamanho_populacao):
+        if numeros_inteiros == False:
+            solucao = [random.uniform(dominio[i][0], dominio[i][1]) for i in range(
+                len(dominio))]
+        else:
+            solucao = [random.randint(dominio[i][0], dominio[i][1]) for i in range(
+                len(dominio))]
+        
+        populacao.append(tuple(solucao)) 
+        
+    return populacao
+
 def get_melhores_individuos(custos, n_elitismo, objetivo):
     custos.sort(reverse=objetivo)
     individuos_ordenados = [individuos for (custo, individuos) in custos]
@@ -255,11 +269,10 @@ def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 50, p_
 
 # exibir_sumario_resultados(solucao, custos, max)
 
-def genetico_2(funcao_custo, dominio, objetivo = False, tamanho_populacao = 8, p_mutacao = 0.2, elitismo = 0.1, geracoes=5):
-    populacao = []
-    for i in range(tamanho_populacao):
-        solucao = [random.randint(dominio[i][0], dominio[i][1]) for i in range(len(dominio))]
-        populacao.append(tuple(solucao)) 
+def genetico_2(funcao_custo, dominio, objetivo = False, tamanho_populacao = 8, p_mutacao = 0.1, 
+               elitismo = 0.1, geracoes=5):
+    
+    populacao = get_populacao(tamanho_populacao, dominio, True)
     
     numero_elitismo = int(elitismo * tamanho_populacao)
     
@@ -283,17 +296,34 @@ def genetico_2(funcao_custo, dominio, objetivo = False, tamanho_populacao = 8, p
     return custos[0][0], custos[0][1]
 
 
+# custos = []
+# solucao = []
+# dominio = [(-5, 5), (-5, 5)]
+# dominio_3 = [(0, 1)] * 12
+
+# for i in range(30):
+#     solucao_algoritmo_genetico = genetico_2(funcao_custo_3, dominio_3, False)
+#     solucao.append(solucao_algoritmo_genetico[1])
+#     custos.append(solucao_algoritmo_genetico[0])
+
+# image = np.asmatrix(solucao[custos.index(min(custos))])
+# image = image.reshape(4, 3)
+# plt.imshow(image, cmap='gray')
+# exibir_sumario_resultados(solucao, custos, min)
+
 custos = []
 solucao = []
 dominio = [(-5, 5), (-5, 5)]
 dominio_3 = [(0, 1)] * 12
+p_mutacao = [0]
+crossover = [1]
 
-for i in range(30):
-    solucao_algoritmo_genetico = genetico_2(funcao_custo_3, dominio_3, False)
+for i in range(int(1 / 0.05)):
+    p_mutacao.append(p_mutacao[len(p_mutacao)- 1] + 0.05)
+    crossover.append(crossover[len(crossover)- 1] - 0.05)
+    print(p_mutacao[len(p_mutacao) - 1])
+    solucao_algoritmo_genetico = genetico_2(funcao_custo_3, dominio_3, False, p_mutacao = 
+                                           p_mutacao[len(p_mutacao) - 1])
+
     solucao.append(solucao_algoritmo_genetico[1])
     custos.append(solucao_algoritmo_genetico[0])
-
-image = np.asmatrix(solucao[custos.index(min(custos))])
-image = image.reshape(4, 3)
-plt.imshow(image, cmap='gray')
-exibir_sumario_resultados(solucao, custos, min)
