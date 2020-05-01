@@ -117,7 +117,7 @@ def get_iteracoes(temperatura, resfriamento):
         count += 1
     return count
 
-def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
+def simulated_annealing(funcao_custo, temperatura = 20, resfriamento = 0.95):
     iteracoes = get_iteracoes(temperatura, resfriamento)
     probabilidade = 100
     queda_prob = probabilidade / iteracoes
@@ -125,7 +125,7 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
     custos = []
     parar_no_plato = 0
 
-    while temperatura > 0.1:
+    while temperatura > 0.01:
         vizinhos = get_vizinhos(solucao)
         
         atual = funcao_custo(solucao)
@@ -139,14 +139,14 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
                 break
 
             custo = funcao_custo(vizinhos[i])
-            #probabilidade = pow(math.e, (custo - melhor) / temperatura) 
-            probabilidade = probabilidade - queda_prob 
             
             if custo >= melhor or random.random() < probabilidade:
                 parar_no_plato = parar_no_plato + 1 if solucao_atual == solucao else 0
                 melhor = custo
                 solucao = vizinhos[i]
-               
+
+        probabilidade = pow(math.e, (-custo - melhor) / temperatura) 
+        # probabilidade = probabilidade - queda_prob        
         temperatura = temperatura * resfriamento
 
     return solucao, custos
@@ -154,12 +154,12 @@ def simulated_annealing(funcao_custo, temperatura = 100, resfriamento = 0.95):
 custos = []
 solucao = []
 
-# for i in range(5):
-#     solucao_tempera_simulada = simulated_annealing(funcao_custo)
-#     solucao.append(solucao_tempera_simulada[0])
-#     custos.append(max(solucao_tempera_simulada[1]))
-#     plotar_busca(solucao_tempera_simulada[1])
-#exibir_sumario_resultados(solucao, custos)
+for i in range(5):
+    solucao_tempera_simulada = simulated_annealing(funcao_custo)
+    solucao.append(solucao_tempera_simulada[0])
+    custos.append(max(solucao_tempera_simulada[1]))
+    plotar_busca(solucao_tempera_simulada[1])
+exibir_sumario_resultados(solucao, custos)
 
 def mutacao(solucao):
     constante = 0.05
