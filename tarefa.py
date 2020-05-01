@@ -310,20 +310,3 @@ def genetico_2(funcao_custo, dominio, objetivo = False, tamanho_populacao = 8, p
 # image = image.reshape(4, 3)
 # plt.imshow(image, cmap='gray')
 # exibir_sumario_resultados(solucao, custos, min)
-
-custos = []
-solucao = []
-dominio = [(-5, 5), (-5, 5)]
-dominio_3 = [(0, 1)] * 12
-p_mutacao = [0]
-crossover = [1]
-
-for i in range(int(1 / 0.05)):
-    p_mutacao.append(p_mutacao[len(p_mutacao)- 1] + 0.05)
-    crossover.append(crossover[len(crossover)- 1] - 0.05)
-    print(p_mutacao[len(p_mutacao) - 1])
-    solucao_algoritmo_genetico = genetico_2(funcao_custo_3, dominio_3, False, p_mutacao = 
-                                           p_mutacao[len(p_mutacao) - 1])
-
-    solucao.append(solucao_algoritmo_genetico[1])
-    custos.append(solucao_algoritmo_genetico[0])
