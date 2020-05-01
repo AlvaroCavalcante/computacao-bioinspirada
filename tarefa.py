@@ -230,11 +230,10 @@ def crossover_binario(solucao1, solucao2):
     solucao_resultante = solucao1[0:index_cruzamento] + solucao2[index_cruzamento:len(solucao2)]
     return solucao_resultante
 
-def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
-    populacao = []
-    for i in range(tamanho_populacao):
-        solucao = [random.uniform(dominio[i][0], dominio[i][1]) for i in range(len(dominio))]
-        populacao.append(tuple(solucao)) 
+def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 12, p_mutacao = 0.1, 
+               elitismo = 0.1, geracoes=8, binario = True):
+    
+    populacao = get_populacao(tamanho_populacao, dominio, binario)
     
     numero_elitismo = int(elitismo * tamanho_populacao)
     
@@ -244,23 +243,25 @@ def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 50, p_
         populacao = get_melhores_individuos(custos, numero_elitismo, objetivo) 
     
         individuos_escolhidos = get_populacao_torneio(custos, (
-                                tamanho_populacao - numero_elitismo) // 2, objetivo)
+                                tamanho_populacao // 2) - numero_elitismo, objetivo)
     
         while len(populacao) < tamanho_populacao:
             if random.random() < p_mutacao:
                 individuo_selecionado = random.randint(0, len(individuos_escolhidos) -1)
-                populacao.append(mutacao(individuos_escolhidos[individuo_selecionado]))
+                f_mutacao = mutacao_binaria if binario == True else mutacao
+                populacao.append(mutacao_binaria(individuos_escolhidos[individuo_selecionado]))
             else:
                 individuo1 = random.randint(0, len(individuos_escolhidos) -1)
                 individuo2 = random.randint(0, len(individuos_escolhidos) -1)
-                populacao.append(crossover(individuos_escolhidos[individuo1], 
+                f_crossover = crossover_binario if binario == True else crossover 
+                populacao.append(crossover_binario(individuos_escolhidos[individuo1], 
                                            individuos_escolhidos[individuo2]))
-    return custos[0][0], custos[0][1]
+    return custos[0][0], custos[0][1]  
 
 # custos = []
 # solucao = []
 # dominio = [(-5, 5), (-5, 5)]
-# 3 = [(0, 1)]
+# dom1 = [(0, 1)]
 
 # for i in range(30):
 #     solucao_algoritmo_genetico = genetico(funcao_custo, 3, True)
@@ -269,44 +270,3 @@ def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 50, p_
 
 # exibir_sumario_resultados(solucao, custos, max)
 
-def genetico_2(funcao_custo, dominio, objetivo = False, tamanho_populacao = 8, p_mutacao = 0.1, 
-               elitismo = 0.1, geracoes=5):
-    
-    populacao = get_populacao(tamanho_populacao, dominio, True)
-    
-    numero_elitismo = int(elitismo * tamanho_populacao)
-    
-    for i in range(geracoes):
-        custos = [(funcao_custo(individuo), individuo) for individuo in populacao]
-        
-        populacao = get_melhores_individuos(custos, numero_elitismo, objetivo) 
-    
-        individuos_escolhidos = get_populacao_torneio(custos, (
-                                tamanho_populacao - numero_elitismo) // 2, objetivo)
-    
-        while len(populacao) < tamanho_populacao:
-            if random.random() < p_mutacao:
-                individuo_selecionado = random.randint(0, len(individuos_escolhidos) -1)
-                populacao.append(mutacao_binaria(individuos_escolhidos[individuo_selecionado]))
-            else:
-                individuo1 = random.randint(0, len(individuos_escolhidos) -1)
-                individuo2 = random.randint(0, len(individuos_escolhidos) -1)
-                populacao.append(crossover_binario(individuos_escolhidos[individuo1], 
-                                           individuos_escolhidos[individuo2]))
-    return custos[0][0], custos[0][1]
-
-
-# custos = []
-# solucao = []
-# dominio = [(-5, 5), (-5, 5)]
-# dominio_3 = [(0, 1)] * 12
-
-# for i in range(30):
-#     solucao_algoritmo_genetico = genetico_2(funcao_custo_3, dominio_3, False)
-#     solucao.append(solucao_algoritmo_genetico[1])
-#     custos.append(solucao_algoritmo_genetico[0])
-
-# image = np.asmatrix(solucao[custos.index(min(custos))])
-# image = image.reshape(4, 3)
-# plt.imshow(image, cmap='gray')
-# exibir_sumario_resultados(solucao, custos, min)

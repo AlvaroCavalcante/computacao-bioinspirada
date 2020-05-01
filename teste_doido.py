@@ -45,9 +45,7 @@ def get_vizinhos(solucao, tx_aprendizado = 1):
     return vizinhos
 
 def simulated_annealing(funcao_custo, temperatura = 20, resfriamento = 0.95):
-    #iteracoes = get_iteracoes(temperatura, resfriamento)
     probabilidade = 100
-    #queda_prob = probabilidade / iteracoes
     #random.seed(42)
     solucao = random.random()
     custos = []
@@ -74,7 +72,6 @@ def simulated_annealing(funcao_custo, temperatura = 20, resfriamento = 0.95):
                 solucao = vizinhos[i]
 
         probabilidade = pow(math.e, (-custo - melhor) / temperatura) 
-        # probabilidade = probabilidade - queda_prob        
         temperatura = temperatura * resfriamento
 
     return solucao, max(custos)
