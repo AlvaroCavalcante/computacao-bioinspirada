@@ -46,7 +46,6 @@ def get_vizinhos(solucao, tx_aprendizado = 1):
 
 def simulated_annealing(funcao_custo, temperatura = 20, resfriamento = 0.95):
     probabilidade = 100
-    #random.seed(42)
     solucao = random.random()
     custos = []
     parar_no_plato = 0
@@ -74,33 +73,48 @@ def simulated_annealing(funcao_custo, temperatura = 20, resfriamento = 0.95):
         probabilidade = pow(math.e, (-custo - melhor) / temperatura) 
         temperatura = temperatura * resfriamento
 
-    return solucao, max(custos)
+    return max(custos)
 
 def mutacao(solucao, dominio):
     constante = 0.05
-    mutante = []
+    index_mutacao = random.randint(0, len(solucao) -1)
+    gene_mutado = solucao[index_mutacao]
+    solucao = list(solucao)
 
-    for i in range(len(solucao)):
-        if random.random() < 0.5:
-            if ((solucao[i] - constante) >= dominio[0][0]):
-                mutante.append(solucao[i] - constante)
-            else:
-                mutante.append(solucao[i]) 
-        else:
-            if ((solucao[i] + constante) <= dominio[0][1]):
-                mutante.append(solucao[i] - constante)
-            else:
-                mutante.append(solucao[i]) 
+    if random.random() < 0.5:
+        if ((gene_mutado - constante) >= dominio[0][0]):
+            gene_mutado = gene_mutado - constante
+    else:
+        if ((gene_mutado + constante) <= dominio[0][1]):
+            gene_mutado = gene_mutado + constante
 
-    return tuple(mutante)
+    del solucao[index_mutacao]
+    solucao.insert(index_mutacao, gene_mutado) 
+            
+    return tuple(solucao)
 
 def crossover(solucao1, solucao2):
     crossed = [(solucao1[i] + solucao2[i]) / 2 for i in range(len(solucao1))]
     return tuple(crossed)
 
-def get_populacao_torneio(populacao, numero_elitismo, objetivo, n_competidores = 3):
+def get_populacao(tamanho_populacao, dominio, numeros_inteiros = False):
+    populacao = []
+    #random.seed(42) #comentar/descomentar para gerar uma seed para os valores "aleatórios"
+    for i in range(tamanho_populacao):
+        if numeros_inteiros == False:
+            solucao = [random.uniform(dominio[i][0], dominio[i][1]) for i in range(
+                len(dominio))]
+        else:
+            solucao = [random.randint(dominio[i][0], dominio[i][1]) for i in range(
+                len(dominio))]
+        
+        populacao.append(tuple(solucao)) 
+        
+    return populacao
+
+def get_populacao_torneio(populacao, numero_individuos, objetivo, n_competidores = 3):
         nova_populacao = []
-        while len(nova_populacao) < numero_elitismo:
+        while len(nova_populacao) < numero_individuos:
             torneio = []
 
             for i in range(n_competidores):
@@ -118,10 +132,7 @@ def get_melhores_individuos(custos, n_elitismo, objetivo):
     return elite
 
 def genetico(funcao_custo, dominio, objetivo = False, tamanho_populacao = 50, p_mutacao = 0.2, elitismo = 0.1, geracoes=20):
-    populacao = []
-    for i in range(tamanho_populacao):
-        solucao = [random.randint(dominio[i][0], dominio[i][1]) for i in range(len(dominio))]
-        populacao.append(tuple(solucao)) 
+    populacao = get_populacao(tamanho_populacao, dominio, True)
     
     numero_elitismo = int(elitismo * tamanho_populacao)
     
