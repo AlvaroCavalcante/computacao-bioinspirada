@@ -14,12 +14,12 @@ def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
 def funcao_ativacao(soma):
-    if soma > 0:
+    if soma > 0: # por default o perceptron usa o limiar de ativação (step function)
         return 1
     return 0
 
 def funcao_custo(valor_correto, valor_previsto):
-    erro = abs(valor_correto - valor_previsto) #não gerar valores negativos
+    erro = abs(valor_correto - valor_previsto) # não gerar valores negativos
     return erro
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
@@ -32,14 +32,16 @@ def treinar(epocas):
     while execucoes < epocas:
         precisao = 100
         iteracao = 0
-    
+
+        np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
+
         for i in previsores.values:
             entradas = i   
             soma = somatoria(entradas, pesos)
         
             ativacao = funcao_ativacao(soma)
         
-            erro = funcao_custo(classe[iteracao], ativacao) #baseado no meu resultado previsto, dado na última função de ativação.
+            erro = funcao_custo(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
             if erro > 0:
                 precisao -= 100 / len(previsores) 
