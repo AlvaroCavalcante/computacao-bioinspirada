@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import pandas as pd
+import math
 
 df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,1]], columns = ['X', 'Y', 'CLASSE'])
 
@@ -10,10 +11,14 @@ classe = df['CLASSE']
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
-def funcao_ativacao(soma):
+def funcao_degrau(soma):
     if soma >= 1:
         return 1
     return 0
+
+def funcao_sigmoid(soma):
+    resultado = 1 / (1 + math.e ** -soma)
+    return resultado
 
 def funcao_custo(valor_correto, valor_previsto):
     erro = abs(valor_correto - valor_previsto) #não gerar valores negativos
@@ -59,12 +64,12 @@ def treinar(epocas, neuronios_camada):
                         peso_inicial += neuronios_camada[i]
                         peso_final += neuronios_camada[i]
                         soma_neuronio = somatoria(camada_entrada, pesos[peso_inicial:peso_final])
-                        ativacao.append(funcao_ativacao(soma_neuronio))
+                        ativacao.append(funcao_sigmoid(soma_neuronio))
                     else:
                         peso_inicial = peso_final
                         peso_final += neuronios_camada[i]
                         soma_neuronio = somatoria(ativacao[0:neuronios_camada[i]], pesos[peso_inicial:peso_final])
-                        ativacao.append(funcao_ativacao(soma_neuronio))
+                        ativacao.append(funcao_degrau(soma_neuronio))
 
                 if len(ativacao) > 3: del ativacao[0:neuronios_camada[i]] 
         
