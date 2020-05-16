@@ -21,7 +21,7 @@ def funcao_sigmoid(soma):
     return resultado
 
 def funcao_custo(valor_correto, valor_previsto):
-    erro = abs(valor_correto - valor_previsto) #não gerar valores negativos
+    erro = abs(valor_correto - valor_previsto) # não gerar valores negativos
     return erro
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
@@ -39,7 +39,6 @@ def treinar(epocas, neuronios_camada):
 
     execucoes = 0
     while execucoes < epocas:
-        precisao = 100
         iteracao = 0
         
         np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
@@ -54,17 +53,19 @@ def treinar(epocas, neuronios_camada):
                 ativacao.append(funcao_sigmoid(soma_sinapse))
 
         resultado_camada_saida = ativacao[2:3][0]
-        for i in resultado_camada_saida: 
-            erro = funcao_custo(classe[iteracao], i[0])
-            if erro > 0:
-                precisao -= 100 / len(previsores) 
-                print('Precisão: ', precisao)
-                count = 0
-                    
-                for i in camada_entrada:
-                    novo_peso = atualizar_peso(i, pesos[count], erro)
-                    pesos[count] = novo_peso
-                    count += 1
+        classe_reshaped = classe.values.reshape(-1,1)
+        erro = funcao_custo(classe_reshaped, resultado_camada_saida)
+        erro_medio_absoluto = np.mean(erro)
+
+        if erro_medio_absoluto > 0:
+            precisao = 100 - erro_medio_absoluto # estratégia de atualização por épocas ao invés de por registros igual o perceptron.
+            print('Precisão: ', precisao)
+            count = 0
+                
+            for i in camada_entrada:
+                novo_peso = atualizar_peso(i, pesos[count], erro)
+                pesos[count] = novo_peso
+                count += 1
             
             iteracao += 1
           
