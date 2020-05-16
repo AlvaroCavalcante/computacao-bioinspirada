@@ -65,13 +65,14 @@ def treinar(epocas, neuronios_camada):
         resultado_camada_saida = ativacao[2:3][0]
         classe_reshaped = classe.values.reshape(-1,1)
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
+        derivada = calcular_derivada_parcial(erro)
+
         erro_medio_absoluto = np.mean(erro)
 
         if erro_medio_absoluto > 0:
             precisao = 1 - erro_medio_absoluto # estratégia de atualização por épocas ao invés de por registros igual o perceptron.
             print('Precisão: ', round((precisao) * 100, 2))
             
-            derivada = calcular_derivada_parcial(erro_medio_absoluto)
             count = 0
             
             for i in camada_entrada:
