@@ -44,6 +44,9 @@ def calcular_derivada_parcial(erro):
     derivada_parcial = y * (1 - y)
     return derivada_parcial
 
+def calcular_delta(erro, derivada):
+    return erro * derivada
+
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
 
@@ -64,8 +67,10 @@ def treinar(epocas, neuronios_camada):
 
         resultado_camada_saida = ativacao[2:3][0]
         classe_reshaped = classe.values.reshape(-1,1)
+
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
         derivada = calcular_derivada_parcial(erro)
+        delta = calcular_delta(erro, derivada)
 
         erro_medio_absoluto = np.mean(erro)
 
