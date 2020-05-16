@@ -29,13 +29,18 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
     print('peso atualizado', novo_peso)
     return novo_peso
 
-def treinar(epocas, neuronios_camada):
+def inicializar_pesos(neuronios_camada):
     pesos_final = []
+
     for i in range(len(neuronios_camada) - 1):
         pesos = []
         for j in range(neuronios_camada[i]):
             pesos.append([random.random() for i in range(neuronios_camada[i + 1])])
         pesos_final.append(pesos)
+    return pesos_final
+
+def treinar(epocas, neuronios_camada):
+    pesos = inicializar_pesos(neuronios_camada)
 
     execucoes = 0
     while execucoes < epocas:
@@ -44,12 +49,12 @@ def treinar(epocas, neuronios_camada):
         np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
         ativacao = []
 
-        for i in range(len(pesos_final)):
+        for i in range(len(pesos)):
             if i == 0:
-                soma_sinapse = np.dot(previsores, pesos_final[i])
+                soma_sinapse = np.dot(previsores, pesos[i])
                 ativacao.append(funcao_sigmoid(soma_sinapse))
             else:
-                soma_sinapse = np.dot(ativacao[i - 1], pesos_final[i])
+                soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
                 ativacao.append(funcao_sigmoid(soma_sinapse))
 
         resultado_camada_saida = ativacao[2:3][0]
