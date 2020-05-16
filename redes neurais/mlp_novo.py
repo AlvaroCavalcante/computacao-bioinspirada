@@ -29,19 +29,7 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
     print('peso atualizado', novo_peso)
     return novo_peso
 
-def get_quantidade_pesos(neuronios_camada):
-    numero_conexoes = []
-    count = 1
-
-    for i in range(len(neuronios_camada) - 1):
-        numero_conexoes.append(neuronios_camada[i] * neuronios_camada[count])
-        count += 1
-    
-    return numero_conexoes, sum(numero_conexoes)
-
 def treinar(epocas, neuronios_camada):
-    numero_conexoes_camada, quantidade_conexoes = get_quantidade_pesos(neuronios_camada) #estou pegando corretamente a soma e neurônios por camada
-
     pesos_final = []
     for i in range(len(neuronios_camada) - 1):
         pesos = []
