@@ -42,7 +42,12 @@ def get_quantidade_pesos(neuronios_camada):
 def treinar(epocas, neuronios_camada):
     numero_conexoes_camada, quantidade_conexoes = get_quantidade_pesos(neuronios_camada) #estou pegando corretamente a soma e neurônios por camada
 
-    pesos = [random.random() for i in range(quantidade_conexoes)]
+    pesos_final = []
+    for i in range(len(neuronios_camada) - 1):
+        pesos = []
+        for j in range(neuronios_camada[i]):
+            pesos.append([random.random() for i in range(neuronios_camada[i + 1])])
+        pesos_final.append(pesos)
 
     execucoes = 0
     while execucoes < epocas:
