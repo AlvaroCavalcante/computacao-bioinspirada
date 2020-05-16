@@ -68,31 +68,6 @@ def treinar(epocas, neuronios_camada):
         resultado_camada_saida = ativacao[2:3][0]
         for i in resultado_camada_saida: 
             erro = funcao_custo(classe[iteracao], i[0])
-
-        for i in previsores.values:
-            camada_entrada = i   
-            
-            peso_inicial = - neuronios_camada[0]
-            peso_final = 0
-            ativacao = []
-
-            for i in range(len(neuronios_camada) - 1): # esse len - 1 é basicamente o número de vezes que vou repetir meu cálculo básico de soma + f - ativação (apenas na entrada que não é feito)
-                for j in range(neuronios_camada[i+1]): # iteração por todos os neurônios enquanto o for de cima é a iteração pelas camadas
-                    if i == 0:
-                        peso_inicial += neuronios_camada[i]
-                        peso_final += neuronios_camada[i]
-                        soma_neuronio = somatoria(camada_entrada, pesos[peso_inicial:peso_final])
-                        ativacao.append(funcao_sigmoid(soma_neuronio))
-                    else:
-                        peso_inicial = peso_final
-                        peso_final += neuronios_camada[i]
-                        soma_neuronio = somatoria(ativacao[0:neuronios_camada[i]], pesos[peso_inicial:peso_final])
-                        ativacao.append(funcao_degrau(soma_neuronio))
-
-                if len(ativacao) > 3: del ativacao[0:neuronios_camada[i]] 
-        
-            erro = funcao_custo(classe[iteracao], ativacao[0]) #baseado no meu resultado previsto, dado na última função de ativação.
-        
             if erro > 0:
                 precisao -= 100 / len(previsores) 
                 print('Precisão: ', precisao)
@@ -104,7 +79,7 @@ def treinar(epocas, neuronios_camada):
                     count += 1
             
             iteracao += 1
-        
+          
         execucoes += 1
     print('Precisão final: ', precisao)
 
