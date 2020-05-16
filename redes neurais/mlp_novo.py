@@ -55,6 +55,19 @@ def treinar(epocas, neuronios_camada):
         iteracao = 0
         
         np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
+        ativacao = []
+
+        for i in range(len(pesos_final)):
+            if i == 0:
+                soma_sinapse = np.dot(previsores, pesos_final[i])
+                ativacao.append(funcao_sigmoid(soma_sinapse))
+            else:
+                soma_sinapse = np.dot(ativacao[i - 1], pesos_final[i])
+                ativacao.append(funcao_sigmoid(soma_sinapse))
+
+        resultado_camada_saida = ativacao[2:3][0]
+        for i in resultado_camada_saida: 
+            erro = funcao_custo(classe[iteracao], i[0])
 
         for i in previsores.values:
             camada_entrada = i   
