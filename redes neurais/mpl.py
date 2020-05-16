@@ -69,7 +69,7 @@ def treinar(epocas, neuronios_camada):
                         peso_inicial = peso_final
                         peso_final += neuronios_camada[i]
                         soma_neuronio = somatoria(ativacao[0:neuronios_camada[i]], pesos[peso_inicial:peso_final])
-                        ativacao.append(funcao_degrau(soma_neuronio))
+                        ativacao.append(funcao_sigmoid(soma_neuronio))
 
                 if len(ativacao) > 3: del ativacao[0:neuronios_camada[i]] 
         
