@@ -51,13 +51,23 @@ def feed_foward(pesos):
 
     return ativacao
 
-def calcular_derivada_parcial(erro):
-    y = funcao_sigmoid(erro)
+def calcular_derivada_parcial(valor):
+    y = funcao_sigmoid(valor)
     derivada_parcial = y * (1 - y)
     return derivada_parcial
 
 def calcular_delta(erro, derivada):
     return erro * derivada
+
+def calcular_delta_oculto(derivada, pesos, delta_saida):
+    return derivada * pesos * delta_saida
+
+def backpropagation(pesos, delta_saida, ativacao):
+    for i in range(len(pesos)):
+        derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)])
+        delta_camada_oculta = calcular_delta_oculto(pesos[(len(pesos) - 1) - 0], delta_saida, derivada)
+
+    return ativacao
 
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
@@ -74,8 +84,11 @@ def treinar(epocas, neuronios_camada):
         classe_reshaped = classe.values.reshape(-1,1)
 
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
+        
         derivada_saida = calcular_derivada_parcial(erro)
         delta_saida = calcular_delta(erro, derivada_saida)
+
+        backpropagation(pesos, delta_saida, ativacao) 
 
         erro_medio_absoluto = np.mean(erro)
 
