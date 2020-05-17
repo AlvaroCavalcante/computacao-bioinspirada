@@ -39,6 +39,18 @@ def inicializar_pesos(neuronios_camada):
         pesos_final.append(pesos)
     return pesos_final
 
+def feed_foward(pesos):
+    ativacao = []
+    for i in range(len(pesos)):
+        if i == 0:
+            soma_sinapse = np.dot(previsores, pesos[i])
+            ativacao.append(funcao_sigmoid(soma_sinapse))
+        else:
+            soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
+            ativacao.append(funcao_sigmoid(soma_sinapse))
+
+    return ativacao
+
 def calcular_derivada_parcial(erro):
     y = funcao_sigmoid(erro)
     derivada_parcial = y * (1 - y)
@@ -55,22 +67,15 @@ def treinar(epocas, neuronios_camada):
         iteracao = 0
         
         np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
-        ativacao = []
-
-        for i in range(len(pesos)):
-            if i == 0:
-                soma_sinapse = np.dot(previsores, pesos[i])
-                ativacao.append(funcao_sigmoid(soma_sinapse))
-            else:
-                soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
-                ativacao.append(funcao_sigmoid(soma_sinapse))
+        
+        ativacao = feed_foward(pesos)
 
         resultado_camada_saida = ativacao[2:3][0]
         classe_reshaped = classe.values.reshape(-1,1)
 
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
-        derivada = calcular_derivada_parcial(erro)
-        delta = calcular_delta(erro, derivada)
+        derivada_saida = calcular_derivada_parcial(erro)
+        delta_saida = calcular_delta(erro, derivada_saida)
 
         erro_medio_absoluto = np.mean(erro)
 
