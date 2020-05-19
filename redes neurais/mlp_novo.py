@@ -59,15 +59,19 @@ def calcular_derivada_parcial(valor):
 def calcular_delta(erro, derivada):
     return erro * derivada
 
-def calcular_delta_oculto(derivada, pesos, delta_saida):
-    return derivada * pesos * delta_saida
+def calcular_delta_oculto(pesos, delta_saida, derivada):
+    matriz_pesos = np.asmatrix(pesos).reshape(1, -1) # conceito de matriz transposta 
+
+    pesos_delta_saida = delta_saida.dot(matriz_pesos)
+
+    pesos_delta_saida = np.transpose(pesos_delta_saida)
+
+    return np.dot(derivada, pesos_delta_saida) # as matrizes precisam estar em uma dimensão diferente uma da outra, nesse caso 4,3 e 3,4
 
 def backpropagation(pesos, delta_saida, ativacao):
     for i in range(len(pesos)):
         derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)])
         delta_camada_oculta = calcular_delta_oculto(pesos[(len(pesos) - 1) - 0], delta_saida, derivada)
-
-    return ativacao
 
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
