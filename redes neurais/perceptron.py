@@ -15,6 +15,24 @@ def z_score_normalization(value):
 
 previsores = previsores.apply(lambda row: z_score_normalization(row) )
 
+def get_dicionario_classes(classe):
+    dict_classes = {}
+    count = 0
+    
+    for i in classe.unique():
+        dict_classes[i] = count
+        count += 1
+        
+    return dict_classes
+
+def transformar_categorico_em_numerico(valor, dict_classes):
+    return dict_classes[valor]
+    
+dict_classes = get_dicionario_classes(classe)
+
+classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes) )
+
+
 pesos = [random.random() for i in range(len(previsores.columns))]
 
 def somatoria(entradas, pesos):
