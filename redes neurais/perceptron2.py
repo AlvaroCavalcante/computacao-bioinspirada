@@ -32,11 +32,10 @@ def transformar_categorico_em_numerico(valor, dict_classes):
     
 classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes))
 
-
 def codificar_classe():
     classe_codificada = {}
     
-    array_classe = [1] + [0] * (len(classe.unique()) - 1)
+    array_classe = np.array([[1]  + ([0] * (len(classe.unique()) - 1)) ])
     
     count = 1
     
@@ -44,15 +43,22 @@ def codificar_classe():
     
     for i in range(len(classe.unique()) - 1):
 
-        array_classe[count - 1] = 0
-        array_classe[count] = 1     
+        array_classe[0][count - 1] = 0
+        array_classe[0][count] = 1  
         classe_codificada[count] = array_classe.copy()
         count += 1
     
     return classe_codificada
         
-
 classe_codificada = codificar_classe()
+
+classe_nova = []
+
+for i in classe:
+    classe_nova.append(classe_codificada[i])
+    
+
+classe_nova = np.array(classe_nova).reshape(150,3)
 
 def substituir_classe_codificada(valor, classe_codificada):
     return classe_codificada[valor]
@@ -75,18 +81,13 @@ def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
 def funcao_ativacao(soma):
-    ativacao = []
-    for i in soma:
-        if i > 0:
-            ativacao.append(1)
-        else:
-            ativacao.append(0)
-
-    return ativacao
+    soma[soma >= 0] = 1
+    soma[soma < 0] = 0
+    return soma
 
 def funcao_custo(valor_correto, valor_previsto):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
-    return sum(erro) # valor escalar
+    return sum(sum(erro)) # valor escalar
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
@@ -100,28 +101,27 @@ def treinar(epocas):
 
         np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
 
-        for i in previsores.values:
-            entradas = i   
-            soma = somatoria(entradas, pesos)
-        
-            ativacao = funcao_ativacao(soma)
-        
-            erro = funcao_custo(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
-        
-            if erro > 0:
-                count = 0
-                    
-                for i in entradas:
-                    novo_peso = atualizar_peso(i, pesos[count], erro)
-                    pesos[count] = novo_peso
-                    count += 1
-            else:
-                precisao += len(previsores) / 100
-                print('Precisão: ', precisao)
+        entradas = previsores.values   
+        soma = somatoria(entradas, pesos)
+    
+        ativacao = funcao_ativacao(soma)
+    
+        erro = funcao_custo(classe_nova, ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
+    
+        if erro > 0:
+            count = 0
+                
+            for i in entradas:
+                novo_peso = atualizar_peso(i, pesos[count], erro)
+                pesos[count] = novo_peso
+                count += 1
+        else:
+            precisao += len(previsores) / 100
+            print('Precisão: ', precisao)
 
-            iteracao += 1
+        iteracao += 1
         
         execucoes += 1
     print('Precisão final: ', precisao)
 
-treinar(800)
+treinar(500)
