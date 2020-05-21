@@ -59,9 +59,17 @@ def substituir_classe_codificada(valor, classe_codificada):
 
 classe = classe.apply(lambda row: substituir_classe_codificada(row, classe_codificada))
 
+def inicializar_pesos():
+    pesos_final = []
+    
+    for i in range(len(previsores.columns)):
+        pesos = [] 
+        for j in range(len(dict_classes)):
+            pesos.append(random.random())
+        pesos_final.append(pesos)
+    return pesos_final
 
-
-pesos = [random.random() for i in range(len(previsores.columns))]
+pesos = inicializar_pesos()
 
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
