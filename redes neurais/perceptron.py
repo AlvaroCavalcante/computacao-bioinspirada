@@ -13,7 +13,7 @@ def z_score_normalization(value):
 
     return (value - media) / desvio_padrao
 
-previsores = previsores.apply(lambda row: z_score_normalization(row) )
+previsores = previsores.apply(lambda row: z_score_normalization(row))
 
 def get_dicionario_classes(classe):
     dict_classes = {}
@@ -25,12 +25,40 @@ def get_dicionario_classes(classe):
         
     return dict_classes
 
+dict_classes = get_dicionario_classes(classe)
+
 def transformar_categorico_em_numerico(valor, dict_classes):
     return dict_classes[valor]
     
-dict_classes = get_dicionario_classes(classe)
+classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes))
 
-classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes) )
+
+def codificar_classe():
+    classe_codificada = {}
+    
+    array_classe = [1] + [0] * (len(classe.unique()) - 1)
+    
+    count = 1
+    
+    classe_codificada[0] = array_classe.copy()
+    
+    for i in range(len(classe.unique()) - 1):
+
+        array_classe[count - 1] = 0
+        array_classe[count] = 1     
+        classe_codificada[count] = array_classe.copy()
+        count += 1
+    
+    return classe_codificada
+        
+
+classe_codificada = codificar_classe()
+
+def substituir_classe_codificada(valor, classe_codificada):
+    return classe_codificada[valor]
+
+classe = classe.apply(lambda row: substituir_classe_codificada(row, classe_codificada))
+
 
 
 pesos = [random.random() for i in range(len(previsores.columns))]
