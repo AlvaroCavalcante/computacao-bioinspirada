@@ -75,13 +75,18 @@ def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
 def funcao_ativacao(soma):
-    if soma > 0: # por default o perceptron usa o limiar de ativação (step function)
-        return 1
-    return 0
+    ativacao = []
+    for i in soma:
+        if i > 0:
+            ativacao.append(1)
+        else:
+            ativacao.append(0)
+
+    return ativacao
 
 def funcao_custo(valor_correto, valor_previsto):
-    erro = abs(valor_correto - valor_previsto) # não gerar valores negativos
-    return erro
+    erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
+    return sum(erro) # valor escalar
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
