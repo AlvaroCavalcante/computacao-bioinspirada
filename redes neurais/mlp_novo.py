@@ -24,9 +24,9 @@ def funcao_custo(valor_correto, valor_previsto):
     erro = abs(valor_correto - valor_previsto) # não gerar valores negativos
     return erro
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
-    novo_peso = peso + (tx_aprendizado * entrada * erro)
-    print('peso atualizado', novo_peso)
+def atualizar_peso(entrada, peso, delta, tx_aprendizado = 0.2, momento = 1):
+    delta_t = np.transpose(np.asmatrix(delta).reshape(-1, 1))
+    novo_peso = (peso * momento) + (np.dot(np.asmatrix(entrada), ) * tx_aprendizado)
     return novo_peso
 
 def inicializar_pesos(neuronios_camada):
@@ -66,7 +66,7 @@ def calcular_delta_oculto(pesos, delta_saida, derivada):
 
     pesos_delta_saida = np.transpose(pesos_delta_saida)
 
-    return np.dot(derivada, pesos_delta_saida) # as matrizes precisam estar em uma dimensão diferente uma da outra, nesse caso 4,3 e 3,4
+    return derivada.dot(pesos_delta_saida) # as matrizes precisam estar em uma dimensão diferente uma da outra, nesse caso 4,3 e 3,4
 
 def backpropagation(pesos, delta_saida, ativacao):
     deltas_camadas_ocultas = []
@@ -74,6 +74,8 @@ def backpropagation(pesos, delta_saida, ativacao):
     for i in range(len(pesos) -1):
         derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)])
         deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[(len(pesos) - 1) - 0], delta_saida, derivada))
+
+    atualizar_peso(ativacao, pesos, deltas_camadas_ocultas)
 
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
