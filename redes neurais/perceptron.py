@@ -90,13 +90,13 @@ def funcao_custo(valor_correto, valor_previsto):
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
-    print('peso atualizado', novo_peso)
+    # print('peso atualizado', novo_peso)
     return novo_peso
 
 def treinar(epocas):
     execucoes = 0
     while execucoes < epocas:
-        precisao = 100
+        precisao = 0
         iteracao = 0
 
         np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
@@ -110,18 +110,19 @@ def treinar(epocas):
             erro = funcao_custo(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
             if erro > 0:
-                precisao -= 100 / len(previsores) 
-                print('Precisão: ', precisao)
                 count = 0
                     
                 for i in entradas:
                     novo_peso = atualizar_peso(i, pesos[count], erro)
                     pesos[count] = novo_peso
                     count += 1
-            
+            else:
+                precisao += len(previsores) / 100
+                print('Precisão: ', precisao)
+
             iteracao += 1
         
         execucoes += 1
     print('Precisão final: ', precisao)
 
-treinar(20)
+treinar(800)
