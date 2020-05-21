@@ -2,11 +2,18 @@ import random
 import numpy as np
 import pandas as pd
 
-df = pd.DataFrame([[1,1,1,0,1,1], [1,0,0,1,0,0], [1,1,1,0,0,0], [1,1,0,1,1,1], [1,1,0,0,1,0], [1,0,0,1,1,1]], 
-columns = ['bias','febre', 'enjoo','manchas', 'dores', 'CLASSE'])
+dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 
-previsores = df.iloc[:, 0:5] 
-classe = df['CLASSE']
+previsores = dataframe.iloc[:, 0:4] 
+classe = dataframe['class']
+
+def z_score_normalization(value):
+    media = previsores[value.name].mean()
+    desvio_padrao = previsores[value.name].std()
+
+    return (value - media) / desvio_padrao
+
+previsores = previsores.apply(lambda row: z_score_normalization(row) )
 
 pesos = [random.random() for i in range(len(previsores.columns))]
 
