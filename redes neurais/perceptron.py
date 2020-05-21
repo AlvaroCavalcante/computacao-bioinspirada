@@ -5,6 +5,7 @@ import pandas as pd
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 
 previsores = dataframe.iloc[:, 0:4] 
+
 classe = dataframe['class']
 
 def z_score_normalization(value):
@@ -14,6 +15,7 @@ def z_score_normalization(value):
     return (value - media) / desvio_padrao
 
 previsores = previsores.apply(lambda row: z_score_normalization(row))
+previsores['bias'] = 1
 
 def get_dicionario_classes(classe):
     dict_classes = {}
@@ -49,8 +51,7 @@ def codificar_classe():
         classe_codificada[count] = array_classe.copy()
         count += 1
     
-    return classe_codificada
-        
+    return classe_codificada       
 
 classe_codificada = codificar_classe()
 
@@ -88,12 +89,13 @@ def funcao_custo(valor_correto, valor_previsto):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
     return sum(erro) # valor escalar
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
 def treinar(epocas):
     execucoes = 0
+    precisoes = []
     while execucoes < epocas:
         precisao = 0
         iteracao = 0
@@ -117,11 +119,12 @@ def treinar(epocas):
                     count += 1
             else:
                 precisao += len(previsores) / 100
+                precisoes.append(precisao)
                 print('Precisão: ', precisao)
 
             iteracao += 1
         
         execucoes += 1
-    print('Precisão final: ', precisao)
+    print('Precisão final: ', max(precisoes))
 
-treinar(800)
+treinar(400)
