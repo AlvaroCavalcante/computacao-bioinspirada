@@ -9,13 +9,13 @@ previsores = dataframe.iloc[:, 0:4]
 
 classe = dataframe['class']
 
-def z_score_normalization(value):
-    media = previsores[value.name].mean()
-    desvio_padrao = previsores[value.name].std()
+def normalizacao_z_score(valor):
+    media = previsores[valor.name].mean()
+    desvio_padrao = previsores[valor.name].std()
 
-    return (value - media) / desvio_padrao
+    return (valor - media) / desvio_padrao
 
-previsores = previsores.apply(lambda row: z_score_normalization(row))
+previsores = previsores.apply(lambda row: normalizacao_z_score(row))
 previsores['bias'] = 1
 
 def get_dicionario_classes(classe):
