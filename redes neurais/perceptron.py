@@ -74,7 +74,7 @@ def inicializar_pesos():
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
-def funcao_ativacao(soma):
+def funcao_ativacao_step(soma):
     ativacao = []
     for i in soma:
         if i > 0:
@@ -100,9 +100,9 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
-def treinar(epocas):
+def treinar(epocas, f_ativacao):
     execucoes = 0
-    precisoes = []
+    precisoes = [0]
     while execucoes < epocas:
         precisao = 0
         iteracao = 0
@@ -113,7 +113,7 @@ def treinar(epocas):
             entradas = i   
             soma = somatoria(entradas, pesos)
         
-            ativacao = funcao_ativacao_sigmoid(soma)
+            ativacao = f_ativacao(soma)
         
             erro = funcao_custo(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
@@ -127,13 +127,16 @@ def treinar(epocas):
             else:
                 precisao += 100 / len(previsores)
                 precisoes.append(precisao)
-                # print('Precisão: ', precisao)
 
             iteracao += 1
         
         execucoes += 1
-    print('Precisão final: ', max(precisoes))
+    return max(precisoes)
+
+precisao_rede = []
 
 for i in range(10):
     pesos = inicializar_pesos()
-    treinar(100)
+    precisao_rede.append(treinar(100, funcao_ativacao_sigmoid))
+
+print('Melhor precisão da rede', max(precisao_rede))
