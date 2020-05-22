@@ -135,7 +135,7 @@ def treinar(epocas, f_ativacao):
 
 precisao_rede = []
 
-for i in range(10):
+for i in range(30):
     pesos = inicializar_pesos()
     precisao_rede.append(treinar(100, funcao_ativacao_sigmoid))
 
