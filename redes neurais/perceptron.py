@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import pandas as pd
+import math 
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 
@@ -85,6 +86,14 @@ def funcao_ativacao(soma):
 
     return ativacao
 
+def funcao_ativacao_sigmoid(soma):
+    resultado = list(1 / (1 + math.e ** -soma))
+    index_excitacao = resultado.index(max(resultado)) 
+    resultado = [0] * len(soma)
+    resultado[index_excitacao] = 1
+    
+    return resultado
+
 def funcao_custo(valor_correto, valor_previsto):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
     return sum(erro) # valor escalar
@@ -106,7 +115,7 @@ def treinar(epocas):
             entradas = i   
             soma = somatoria(entradas, pesos)
         
-            ativacao = funcao_ativacao(soma)
+            ativacao = funcao_ativacao_sigmoid(soma)
         
             erro = funcao_custo(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
@@ -120,11 +129,11 @@ def treinar(epocas):
             else:
                 precisao += len(previsores) / 100
                 precisoes.append(precisao)
-                print('Precisão: ', precisao)
+                # print('Precisão: ', precisao)
 
             iteracao += 1
         
         execucoes += 1
     print('Precisão final: ', max(precisoes))
 
-treinar(400)
+treinar(700)
