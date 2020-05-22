@@ -71,8 +71,6 @@ def inicializar_pesos():
         pesos_final.append(pesos)
     return pesos_final
 
-pesos = inicializar_pesos()
-
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
@@ -127,7 +125,7 @@ def treinar(epocas):
                     pesos[count] = novo_peso
                     count += 1
             else:
-                precisao += len(previsores) / 100
+                precisao += 100 / len(previsores)
                 precisoes.append(precisao)
                 # print('Precisão: ', precisao)
 
@@ -136,4 +134,6 @@ def treinar(epocas):
         execucoes += 1
     print('Precisão final: ', max(precisoes))
 
-treinar(700)
+for i in range(10):
+    pesos = inicializar_pesos()
+    treinar(100)
