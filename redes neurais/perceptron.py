@@ -16,7 +16,6 @@ def normalizacao_z_score(valor):
     return (valor - media) / desvio_padrao
 
 previsores = previsores.apply(lambda row: normalizacao_z_score(row))
-previsores['bias'] = 1
 
 def get_dicionario_classes(classe):
     dict_classes = {}
@@ -61,13 +60,13 @@ def substituir_classe_codificada(valor, classe_codificada):
 
 classe = classe.apply(lambda row: substituir_classe_codificada(row, classe_codificada))
 
-def inicializar_pesos():
+def inicializar_pesos(dominio):
     pesos_final = []
     
     for i in range(len(previsores.columns)):
         pesos = [] 
         for j in range(len(dict_classes)):
-            pesos.append(random.random())
+            pesos.append(random.uniform(dominio[0], dominio[1]))
         pesos_final.append(pesos)
     return pesos_final
 
@@ -134,9 +133,10 @@ def treinar(epocas, f_ativacao):
     return max(precisoes)
 
 precisao_rede = []
+previsores['bias'] = 1
 
-for i in range(30):
-    pesos = inicializar_pesos()
+for i in range(50):
+    pesos = inicializar_pesos([0, 0.5])
     precisao_rede.append(treinar(100, funcao_ativacao_sigmoid))
 
 print('Melhor precisão da rede', max(precisao_rede))
