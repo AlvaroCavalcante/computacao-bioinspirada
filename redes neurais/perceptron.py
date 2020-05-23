@@ -60,6 +60,18 @@ def substituir_classe_codificada(valor, classe_codificada):
 
 classe = classe.apply(lambda row: substituir_classe_codificada(row, classe_codificada))
 
+
+def dividir_dataframe(previsores, classe, p_treinamento, p_teste):
+    x_treinamento = previsores.sample(frac = p_treinamento)
+    y_treinamento = classe[x_treinamento.index]
+    
+    x_teste = previsores.drop(x_treinamento.index)
+    y_teste = classe[x_teste.index]
+    
+    return x_treinamento, y_treinamento, x_teste, y_teste
+
+x_treinamento, y_treinamento, x_tese, y_teste = dividir_dataframe(previsores, classe, 0.7, 0.3)
+
 def inicializar_pesos(dominio):
     pesos_final = []
     
@@ -158,3 +170,4 @@ def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
     print('Melhor precisão da rede', max(precisao_rede))
 
 executar_perceptron(funcao_ativacao_sigmoid, 100, [0, 0.5])
+
