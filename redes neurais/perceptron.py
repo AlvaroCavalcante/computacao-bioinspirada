@@ -99,6 +99,21 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
+def funcao_custo_mse(valor_correto, valor_previsto):
+    erro = list(np.array(valor_correto) - np.array(valor_previsto))
+    erro_quadratico = list(map(lambda x: math.pow(x, 2), erro))
+    soma_erro_quadratico = sum(erro_quadratico)
+
+    return soma_erro_quadratico # / len(previsores) essa parte é apenas para atualização em epoca
+
+def funcao_custo_rmse(valor_correto, valor_previsto):
+    erro = list(np.array(valor_correto) - np.array(valor_previsto))
+    erro_quadratico = list(map(lambda x: math.pow(x, 2), erro))
+    soma_erro_quadratico = sum(erro_quadratico)
+
+    return math.sqrt(soma_erro_quadratico) # / len(previsores) essa parte é apenas para atualização em epoca
+
+
 def treinar(epocas, f_ativacao, pesos):
     execucoes = 0
     precisoes = [0]
@@ -114,7 +129,7 @@ def treinar(epocas, f_ativacao, pesos):
         
             ativacao = f_ativacao(soma)
         
-            erro = funcao_custo(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
+            erro = funcao_custo_rmse(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
             if erro > 0:
                 count = 0
@@ -136,7 +151,7 @@ previsores['bias'] = 1
 
 def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
     precisao_rede = []
-    for i in range(50):
+    for i in range(20):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
         precisao_rede.append(treinar(epocas, funcao_ativacao, pesos))
 
