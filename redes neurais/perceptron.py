@@ -99,7 +99,7 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
-def treinar(epocas, f_ativacao):
+def treinar(epocas, f_ativacao, pesos):
     execucoes = 0
     precisoes = [0]
     while execucoes < epocas:
@@ -132,11 +132,14 @@ def treinar(epocas, f_ativacao):
         execucoes += 1
     return max(precisoes)
 
-precisao_rede = []
 previsores['bias'] = 1
 
-for i in range(50):
-    pesos = inicializar_pesos([0, 0.5])
-    precisao_rede.append(treinar(100, funcao_ativacao_sigmoid))
+def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
+    precisao_rede = []
+    for i in range(50):
+        pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
+        precisao_rede.append(treinar(epocas, funcao_ativacao, pesos))
 
-print('Melhor precisão da rede', max(precisao_rede))
+    print('Melhor precisão da rede', max(precisao_rede))
+
+executar_perceptron(funcao_ativacao_sigmoid, 100, [0, 0.5])
