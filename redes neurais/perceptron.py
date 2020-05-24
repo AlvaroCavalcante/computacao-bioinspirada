@@ -73,9 +73,8 @@ def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
     x_validacao = x_teste_sem_previsores.drop(x_teste.index)
     y_validacao = classe[x_validacao.index]
     
-    return x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao
-
-x_treinamento, y_treinamento, x_tese, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
+    return x_treinamento.reset_index(drop=True), y_treinamento.reset_index(drop=True), \
+    x_teste.reset_index(drop=True), y_teste.reset_index(drop=True), x_validacao.reset_index(drop=True), y_validacao.reset_index(drop=True)
 
 def inicializar_pesos(dominio):
     pesos_final = []
@@ -131,22 +130,22 @@ def funcao_custo_rmse(valor_correto, valor_previsto):
     return math.sqrt(soma_erro_quadratico) # / len(previsores) essa parte é apenas para atualização em epoca
 
 
-def treinar(epocas, f_ativacao, pesos):
+def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento):
     execucoes = 0
     precisoes = [0]
     while execucoes < epocas:
         precisao = 0
         iteracao = 0
 
-        np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
+        np.random.shuffle(x_treinamento.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
 
-        for i in previsores.values:
+        for i in x_treinamento.values:
             entradas = i   
             soma = somatoria(entradas, pesos)
         
             ativacao = f_ativacao(soma)
         
-            erro = funcao_custo_rmse(classe[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
+            erro = funcao_custo_rmse(y_treinamento[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
             if erro > 0:
                 count = 0
@@ -156,7 +155,7 @@ def treinar(epocas, f_ativacao, pesos):
                     pesos[count] = novo_peso
                     count += 1
             else:
-                precisao += 100 / len(previsores)
+                precisao += 100 / len(x_treinamento)
                 precisoes.append(precisao)
 
             iteracao += 1
@@ -168,11 +167,12 @@ previsores['bias'] = 1
 
 def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
     precisao_rede = []
-    for i in range(20):
+    for i in range(10):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
-        precisao_rede.append(treinar(epocas, funcao_ativacao, pesos))
+        x_treinamento, y_treinamento, x_tese, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
+        precisao_rede.append(treinar(epocas, funcao_ativacao, pesos, x_treinamento, y_treinamento))
 
     print('Melhor precisão da rede', max(precisao_rede))
 
-executar_perceptron(funcao_ativacao_sigmoid, 100, [0, 0.5])
+executar_perceptron(funcao_ativacao_sigmoid, 350, [0, 0.5])
 
