@@ -60,17 +60,22 @@ def substituir_classe_codificada(valor, classe_codificada):
 
 classe = classe.apply(lambda row: substituir_classe_codificada(row, classe_codificada))
 
-
-def dividir_dataframe(previsores, classe, p_treinamento, p_teste):
+def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
     x_treinamento = previsores.sample(frac = p_treinamento)
     y_treinamento = classe[x_treinamento.index]
     
-    x_teste = previsores.drop(x_treinamento.index)
+    x_teste_sem_previsores = previsores.drop(x_treinamento.index)
+    nova_p_teste = p_teste / (1 - p_treinamento)
+    
+    x_teste = x_teste_sem_previsores.sample(frac = nova_p_teste)
     y_teste = classe[x_teste.index]
     
-    return x_treinamento, y_treinamento, x_teste, y_teste
+    x_validacao = x_teste_sem_previsores.drop(x_teste.index)
+    y_validacao = classe[x_validacao.index]
+    
+    return x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao
 
-x_treinamento, y_treinamento, x_tese, y_teste = dividir_dataframe(previsores, classe, 0.7, 0.3)
+x_treinamento, y_treinamento, x_tese, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
 def inicializar_pesos(dominio):
     pesos_final = []
