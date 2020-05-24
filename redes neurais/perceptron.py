@@ -130,9 +130,28 @@ def funcao_custo_rmse(valor_correto, valor_previsto):
     return math.sqrt(soma_erro_quadratico) # / len(previsores) essa parte é apenas para atualização em epoca
 
 
-def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento):
+def testar(pesos, x_teste, y_teste, f_ativacao):
+    precisao = 0
+    iteracao = 0
+    for i in x_teste.values:
+        entradas = i   
+        soma = somatoria(entradas, pesos)
+        
+        ativacao = f_ativacao(soma)
+        
+        erro = funcao_custo_rmse(y_teste[iteracao], ativacao)
+
+        if erro == 0:
+            precisao += 100 / len(x_teste)
+        
+        iteracao += 1
+    
+    return precisao
+
+def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento, x_teste, y_teste):
     execucoes = 0
-    precisoes = [0]
+    precisoes_treinamento = [0]
+    precisoes_teste = [0]
     while execucoes < epocas:
         precisao = 0
         iteracao = 0
@@ -156,23 +175,33 @@ def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento):
                     count += 1
             else:
                 precisao += 100 / len(x_treinamento)
-                precisoes.append(precisao)
+                precisoes_treinamento.append(precisao)
 
             iteracao += 1
         
+        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao))
         execucoes += 1
-    return max(precisoes)
+
+    return max(precisoes_treinamento), max(precisoes_teste)
 
 previsores['bias'] = 1
 
 def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
-    precisao_rede = []
+    precisao_treinamento = []
+    precisao_teste = []
+
     for i in range(10):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
-        x_treinamento, y_treinamento, x_tese, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
-        precisao_rede.append(treinar(epocas, funcao_ativacao, pesos, x_treinamento, y_treinamento))
+        x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
-    print('Melhor precisão da rede', max(precisao_rede))
+        treinamento = treinar(epocas, funcao_ativacao, pesos, x_treinamento, y_treinamento,
+                                     x_teste, y_teste)
+                                     
+        precisao_treinamento.append(treinamento[0])
+        precisao_teste.append(treinamento[1])
+
+    print('Melhor precisão de treinamento', max(precisao_treinamento))
+    print('Melhor precisão de teste', max(precisao_teste))
 
 executar_perceptron(funcao_ativacao_sigmoid, 350, [0, 0.5])
 
