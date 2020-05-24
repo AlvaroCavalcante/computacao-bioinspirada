@@ -182,13 +182,14 @@ def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento, x_teste, y_
         precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao))
         execucoes += 1
 
-    return max(precisoes_treinamento), max(precisoes_teste)
+    return max(precisoes_treinamento), max(precisoes_teste), pesos
 
 previsores['bias'] = 1
 
 def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
     precisao_treinamento = []
     precisao_teste = []
+    resultado_final = []
 
     for i in range(10):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
@@ -200,8 +201,11 @@ def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
         precisao_treinamento.append(treinamento[0])
         precisao_teste.append(treinamento[1])
 
+        resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao))
+
     print('Melhor precisão de treinamento', max(precisao_treinamento))
     print('Melhor precisão de teste', max(precisao_teste))
+    print('Melhor precisão de validação', max(precisao_teste))
 
 executar_perceptron(funcao_ativacao_sigmoid, 350, [0, 0.5])
 
