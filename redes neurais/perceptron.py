@@ -207,5 +207,5 @@ def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
     print('Melhor precisão de teste', max(precisao_teste))
     print('Melhor precisão de validação', max(precisao_teste))
 
-executar_perceptron(funcao_ativacao_sigmoid, 350, [0, 0.5])
+executar_perceptron(funcao_ativacao_sigmoid, 350, [-0.5, 0.5])
 
