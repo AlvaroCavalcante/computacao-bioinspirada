@@ -2,6 +2,7 @@ import random
 import numpy as np
 import pandas as pd
 import math 
+import matplotlib.pyplot as plt
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 # dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/wine.csv', header = 0)
@@ -114,7 +115,7 @@ def funcao_custo(valor_correto, valor_previsto):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
     return sum(erro) # valor escalar
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.1):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
@@ -218,5 +219,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     print('Melhor precisão de teste', max(precisao_teste))
     print('Melhor precisão de validação', max(resultado_final))
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 350, [-0.5, 0.5])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 150, [-1, 1])
 
