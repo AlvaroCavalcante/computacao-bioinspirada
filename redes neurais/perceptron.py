@@ -130,7 +130,7 @@ def funcao_custo_rmse(valor_correto, valor_previsto):
     return math.sqrt(soma_erro_quadratico) # / len(previsores) essa parte é apenas para atualização em epoca
 
 
-def testar(pesos, x_teste, y_teste, f_ativacao):
+def testar(pesos, x_teste, y_teste, f_ativacao, f_custo):
     precisao = 0
     iteracao = 0
     for i in x_teste.values:
@@ -139,7 +139,7 @@ def testar(pesos, x_teste, y_teste, f_ativacao):
         
         ativacao = f_ativacao(soma)
         
-        erro = funcao_custo_rmse(y_teste[iteracao], ativacao)
+        erro = f_custo(y_teste[iteracao], ativacao)
 
         if erro == 0:
             precisao += 100 / len(x_teste)
@@ -148,7 +148,7 @@ def testar(pesos, x_teste, y_teste, f_ativacao):
     
     return precisao
 
-def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento, x_teste, y_teste):
+def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_teste, y_teste):
     execucoes = 0
     precisoes_treinamento = [0]
     precisoes_teste = [0]
@@ -164,7 +164,7 @@ def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento, x_teste, y_
         
             ativacao = f_ativacao(soma)
         
-            erro = funcao_custo_rmse(y_treinamento[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
+            erro = f_custo(y_treinamento[iteracao], ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
         
             if erro > 0:
                 count = 0
@@ -179,14 +179,14 @@ def treinar(epocas, f_ativacao, pesos, x_treinamento, y_treinamento, x_teste, y_
 
             iteracao += 1
         
-        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao))
+        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
         execucoes += 1
 
     return max(precisoes_treinamento), max(precisoes_teste), pesos
 
 previsores['bias'] = 1
 
-def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
+def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1]):
     precisao_treinamento = []
     precisao_teste = []
     resultado_final = []
@@ -195,17 +195,17 @@ def executar_perceptron(funcao_ativacao, epocas, dominio_pesos = [0, 1]):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
-        treinamento = treinar(epocas, funcao_ativacao, pesos, x_treinamento, y_treinamento,
+        treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste)
                                      
         precisao_treinamento.append(treinamento[0])
         precisao_teste.append(treinamento[1])
 
-        resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao))
+        resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
 
     print('Melhor precisão de treinamento', max(precisao_treinamento))
     print('Melhor precisão de teste', max(precisao_teste))
     print('Melhor precisão de validação', max(precisao_teste))
 
-executar_perceptron(funcao_ativacao_sigmoid, 350, [-0.5, 0.5])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_rmse, 350, [-0.5, 0.5])
 
