@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import pandas as pd
+import math 
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 
@@ -85,11 +86,23 @@ def funcao_ativacao(soma):
     soma[soma < 0] = 0
     return soma
 
+def funcao_ativacao_sigmoid(soma):
+    resultado = 1 / (1 + math.e ** -soma)
+    index_excitacao = np.argmax(resultado, 1) 
+    
+    count = 0
+    for i in index_excitacao:
+        resultado[count] = 0
+        resultado[count][i] = 1
+        count += 1
+        
+    return resultado
+    
 def funcao_custo(valor_correto, valor_previsto):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
     return sum(sum(erro)) # valor escalar
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.2):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
@@ -104,15 +117,15 @@ def treinar(epocas):
         entradas = previsores.values   
         soma = somatoria(entradas, pesos)
     
-        ativacao = funcao_ativacao(soma)
+        ativacao = funcao_ativacao_sigmoid(soma)
     
         erro = funcao_custo(classe_nova, ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
     
         if erro > 0:
             count = 0
                 
-            for i in entradas:
-                novo_peso = atualizar_peso(i, pesos[count], erro)
+            for i in range(entradas.shape[1]): # o for tem que atualizar cada peso da camada
+                novo_peso = atualizar_peso(entradas[:, i], pesos[i], erro)
                 pesos[count] = novo_peso
                 count += 1
         else:
