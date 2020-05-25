@@ -140,6 +140,17 @@ def plotar_convergencia(precisao_teste, precisao_treinamento):
     plt.plot(precisao_treinamento)
     plt.show()
 
+def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
+    print('Melhor precisão de treinamento', max(precisao_treinamento))
+    print('Melhor precisão de teste', max(precisao_teste))
+    print('Melhor precisão de validação', max(resultado_final))
+    print('Média precisão de treinamento', np.mean(precisao_treinamento))
+    print('Média precisão de teste', np.mean(precisao_teste))
+    print('Média precisão de validação', np.mean(resultado_final))
+    print('Desvio Padrão precisão de treinamento', np.std(precisao_treinamento))
+    print('Desvio Padrão precisão de teste', np.std(precisao_teste))
+    print('Desvio Padrão precisão de validação', np.std(resultado_final))
+
 def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     precisao = 0
     iteracao = 0
@@ -215,9 +226,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
 
     plotar_convergencia(treinamento[0], treinamento[1])
-    print('Melhor precisão de treinamento', max(precisao_treinamento))
-    print('Melhor precisão de teste', max(precisao_teste))
-    print('Melhor precisão de validação', max(resultado_final))
+    exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
 executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 150, [-1, 1])
 
