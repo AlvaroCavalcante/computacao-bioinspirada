@@ -130,19 +130,19 @@ def funcao_custo_rmse(valor_correto, valor_previsto):
     return math.sqrt(soma_erro_quadratico) # / len(previsores) essa parte é apenas para atualização em epoca
 
 
-def testar(pesos, x_teste, y_teste, f_ativacao, f_custo):
+def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     precisao = 0
     iteracao = 0
-    for i in x_teste.values:
+    for i in x_previsores.values:
         entradas = i   
         soma = somatoria(entradas, pesos)
         
         ativacao = f_ativacao(soma)
         
-        erro = f_custo(y_teste[iteracao], ativacao)
+        erro = f_custo(y_classe[iteracao], ativacao)
 
         if erro == 0:
-            precisao += 100 / len(x_teste)
+            precisao += 100 / len(x_previsores)
         
         iteracao += 1
     
@@ -205,7 +205,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
 
     print('Melhor precisão de treinamento', max(precisao_treinamento))
     print('Melhor precisão de teste', max(precisao_teste))
-    print('Melhor precisão de validação', max(precisao_teste))
+    print('Melhor precisão de validação', max(resultado_final))
 
 executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 350, [-0.5, 0.5])
 
