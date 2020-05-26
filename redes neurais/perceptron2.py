@@ -117,14 +117,26 @@ def funcao_custo(valor_correto, valor_previsto):
     
     return sum(sum(erro)), acerto # valor escalar
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.01):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + sum((tx_aprendizado * entrada * erro))
     return novo_peso
 
-def treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
+def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
+    entradas = x_previsores.values  
+    soma = somatoria(entradas, pesos)
+    
+    ativacao = f_ativacao(soma)
+    
+    erro, acertos = f_custo(y_classe, ativacao)
+       
+    return acertos / len(x_previsores)
+
+def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste):
     execucoes = 0
     precisoes_treinamento = []
+    precisoes_teste = []
+
     while execucoes < epocas:
 
         np.random.shuffle(x_treinamento.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
@@ -132,9 +144,9 @@ def treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_trein
         entradas = x_treinamento.values   
         soma = somatoria(entradas, pesos)
     
-        ativacao = funcao_ativacao_sigmoid(soma)
+        ativacao = f_ativacao(soma)
     
-        erro, acertos = funcao_custo(y_treinamento, ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
+        erro, acertos = f_custo(y_treinamento, ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
     
         count = 0
         precisoes_treinamento.append(acertos / len(x_treinamento))    
@@ -144,16 +156,17 @@ def treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_trein
             pesos[count] = novo_peso
             count += 1
         
+        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
         execucoes += 1
     
-    return precisoes_treinamento
+    return precisoes_treinamento, precisoes_teste
 
 previsores['bias'] = 1
 
 
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1]):
     precisao_treinamento = []
-    # precisao_teste = []
+    precisao_teste = []
 
     for i in range(30):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
@@ -162,15 +175,17 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste)
                                      
-        precisao_treinamento.append(max(treinamento))
-        # precisao_teste.append(max(treinamento[1]))
+        precisao_treinamento.append(max(treinamento[0]))
+        precisao_teste.append(max(treinamento[1]))
 
 
     print('Melhor precisão de treinamento', max(precisao_treinamento))
     print('Média de treinamento', np.mean(treinamento))
     print('Desvio de treinamento', np.std(treinamento))
 
-    # print('Melhor precisão de teste', max(precisao_teste))
+    print('Melhor precisão de teste', max(precisao_teste))
+    print('Média de teste', np.mean(precisao_teste))
+    print('Desvio de teste', np.std(precisao_teste))
 
 executar_perceptron(funcao_ativacao_sigmoid, funcao_custo, 200, [-0.5, 0.5])
 
