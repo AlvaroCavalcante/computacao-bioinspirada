@@ -104,16 +104,17 @@ def funcao_ativacao_step(soma):
     return ativacao
 
 def funcao_ativacao_sigmoid(soma):
-    resultado = list(1 / (1 + math.e ** -soma))
-    index_excitacao = resultado.index(max(resultado)) 
-    resultado = [0] * len(soma)
-    resultado[index_excitacao] = 1
+    valor_ativacao = list(1 / (1 + math.e ** -soma))
+    index_excitacao = valor_ativacao.index(max(valor_ativacao)) 
+    neuronio_excitado = [0] * len(soma)
+    neuronio_excitado[index_excitacao] = 1
     
-    return resultado
+    return neuronio_excitado, valor_ativacao
 
-def funcao_custo(valor_correto, valor_previsto):
+def funcao_custo(valor_correto, valor_previsto, valor_ativacao):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
-    return sum(erro) # valor escalar
+    valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
+    return sum(erro), sum(valor_erro) # valor escalar
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.1):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
@@ -162,9 +163,9 @@ def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
         entradas = i   
         soma = somatoria(entradas, pesos)
         
-        ativacao = f_ativacao(soma)
+        neuronio_excitado, valor_ativacao = f_ativacao(soma)
         
-        erro = f_custo(y_classe[iteracao], ativacao)
+        erro, valor_erro = f_custo(y_classe[iteracao], neuronio_excitado, valor_ativacao)
 
         if erro == 0:
             precisao += 100 / len(x_previsores)
@@ -188,18 +189,18 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
             entradas = i   
             soma = somatoria(entradas, pesos)
         
-            ativacao = f_ativacao(soma)
+            neuronio_excitado, valor_ativacao = f_ativacao(soma)
         
-            erro = f_custo(y_treinamento[iteracao], ativacao)
+            erro, valor_erro = f_custo(y_treinamento[iteracao], neuronio_excitado, valor_ativacao)
 
             if erro > 0:
                 count = 0
 
                 for i in entradas:
                     if count == len(entradas) - 1:
-                        novo_peso = atualizar_bias(i, pesos[count], erro)
+                        novo_peso = atualizar_bias(i, pesos[count], valor_erro)
                     else:
-                        novo_peso = atualizar_peso(i, pesos[count], erro)
+                        novo_peso = atualizar_peso(i, pesos[count], valor_erro)
                     
                     pesos[count] = novo_peso
                     count += 1
@@ -236,5 +237,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     plotar_convergencia(treinamento[0], treinamento[1])
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 150, [-1, 1])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo, 300, [-1, 1])
 
