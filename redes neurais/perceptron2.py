@@ -4,9 +4,13 @@ import pandas as pd
 import math 
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
+# dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/wine.csv', header = 0)
 
 previsores = dataframe.iloc[:, 0:4] 
 classe = dataframe['class']
+
+# previsores = dataframe.iloc[:, 1:14] 
+# classe = dataframe['Wine']
 
 def z_score_normalization(value):
     media = previsores[value.name].mean()
@@ -58,7 +62,7 @@ classe_nova = []
 for i in classe:
     classe_nova.append(classe_codificada[i])
     
-classe_nova = np.array(classe_nova).reshape(150,3)
+classe_nova = np.array(classe_nova).reshape(len(classe), 3)
 
 def substituir_classe_codificada(valor, classe_codificada):
     return classe_codificada[valor]
