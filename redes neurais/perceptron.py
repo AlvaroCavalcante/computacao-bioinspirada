@@ -124,19 +124,19 @@ def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.1):
     novo_peso = peso + np.float64(tx_aprendizado * erro)
     return novo_peso
 
-def funcao_custo_mse(valor_correto, valor_previsto):
-    erro = list(np.array(valor_correto) - np.array(valor_previsto))
-    erro_quadratico = list(map(lambda x: math.pow(x, 2), erro))
+def funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao):
+    erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
+
+    valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
+    erro_quadratico = list(map(lambda x: math.pow(x, 2), valor_erro))
     soma_erro_quadratico = sum(erro_quadratico)
 
-    return soma_erro_quadratico # / len(previsores) essa parte é apenas para atualização em epoca
+    return sum(erro), soma_erro_quadratico # / len(previsores) essa parte é apenas para atualização em epoca
 
-def funcao_custo_rmse(valor_correto, valor_previsto):
-    erro = list(np.array(valor_correto) - np.array(valor_previsto))
-    erro_quadratico = list(map(lambda x: math.pow(x, 2), erro))
-    soma_erro_quadratico = sum(erro_quadratico)
+def funcao_custo_rmse(valor_correto, valor_previsto, valor_ativacao):
+    erro, valor_erro = funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao)
 
-    return math.sqrt(soma_erro_quadratico) # / len(previsores) essa parte é apenas para atualização em epoca
+    return erro, math.sqrt(valor_erro) # / len(previsores) essa parte é apenas para atualização em epoca
 
 
 def plotar_convergencia(precisao_teste, precisao_treinamento):
@@ -237,5 +237,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     plotar_convergencia(treinamento[0], treinamento[1])
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo, 300, [-1, 1])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 300, [-1, 1])
 
