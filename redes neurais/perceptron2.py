@@ -96,26 +96,30 @@ def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
 def funcao_ativacao_sigmoid(soma):
-    resultado = 1 / (1 + math.e ** -soma)
-    index_excitacao = np.argmax(resultado, 1) 
+    valor_ativacao = 1 / (1 + math.e ** -soma)
+    index_excitacao = np.argmax(valor_ativacao, 1) 
     
     count = 0
+    neuronios_excitado = valor_ativacao.copy()
+
     for i in index_excitacao:
-        resultado[count] = 0
-        resultado[count][i] = 1
+        neuronios_excitado[count] = 0
+        neuronios_excitado[count][i] = 1
         count += 1
         
-    return resultado
+    return neuronios_excitado, valor_ativacao
     
-def funcao_custo(valor_correto, valor_previsto):
+def funcao_custo(valor_correto, valor_previsto, valor_ativacao):
     erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
+    valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
+
     acerto = 0
     
     for i in erro:
         if sum(i) == 0:
             acerto += 1
     
-    return sum(sum(erro)), acerto # valor escalar
+    return sum(sum(erro)), acerto, sum(sum(valor_erro)) # valor escalar
 
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + sum((tx_aprendizado * entrada * erro))
@@ -125,9 +129,9 @@ def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     entradas = x_previsores.values  
     soma = somatoria(entradas, pesos)
     
-    ativacao = f_ativacao(soma)
+    neuronio_excitado, valor_ativacao = f_ativacao(soma)
     
-    erro, acertos = f_custo(y_classe, ativacao)
+    erro, acertos, valor_erro = f_custo(y_classe, neuronio_excitado, valor_ativacao)
        
     return acertos / len(x_previsores)
 
@@ -144,15 +148,15 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
         entradas = x_treinamento.values   
         soma = somatoria(entradas, pesos)
     
-        ativacao = f_ativacao(soma)
+        neuronio_excitado, valor_ativacao = f_ativacao(soma)
     
-        erro, acertos = f_custo(y_treinamento, ativacao) # baseado no meu resultado previsto, dado na última função de ativação.
+        erro, acertos, valor_erro = f_custo(y_treinamento, neuronio_excitado, valor_ativacao)
     
         count = 0
         precisoes_treinamento.append(acertos / len(x_treinamento))    
 
         for i in range(entradas.shape[1]): # o for tem que atualizar cada peso da camada
-            novo_peso = atualizar_peso(entradas[:, i], pesos[i], erro)
+            novo_peso = atualizar_peso(entradas[:, i], pesos[i], valor_erro)
             pesos[count] = novo_peso
             count += 1
         
@@ -187,5 +191,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     print('Média de teste', np.mean(precisao_teste))
     print('Desvio de teste', np.std(precisao_teste))
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo, 200, [-0.5, 0.5])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo, 400, [-1, 1])
 
