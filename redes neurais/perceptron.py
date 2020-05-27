@@ -119,6 +119,10 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.1):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
+def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.1):
+    novo_peso = peso + np.float64(tx_aprendizado * erro)
+    return novo_peso
+
 def funcao_custo_mse(valor_correto, valor_previsto):
     erro = list(np.array(valor_correto) - np.array(valor_previsto))
     erro_quadratico = list(map(lambda x: math.pow(x, 2), erro))
@@ -192,7 +196,11 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
                 count = 0
 
                 for i in entradas:
-                    novo_peso = atualizar_peso(i, pesos[count], erro)
+                    if count == len(entradas) - 1:
+                        novo_peso = atualizar_bias(i, pesos[count], erro)
+                    else:
+                        novo_peso = atualizar_peso(i, pesos[count], erro)
+                    
                     pesos[count] = novo_peso
                     count += 1
             else:
@@ -213,7 +221,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     precisao_teste = []
     resultado_final = []
 
-    for i in range(10):
+    for i in range(30):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
