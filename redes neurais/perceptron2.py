@@ -121,6 +121,21 @@ def funcao_custo(valor_correto, valor_previsto, valor_ativacao):
     
     return sum(sum(erro)), acerto, sum(sum(valor_erro)) # valor escalar
 
+def funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao):
+    erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
+    valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
+
+    acerto = 0
+    
+    for i in erro:
+        if sum(i) == 0:
+            acerto += 1
+
+    erro_quadratico = list(map(lambda x: x**2, valor_erro))
+    soma_erro_quadratico = sum(erro_quadratico)
+
+    return sum(erro), acerto, sum(soma_erro_quadratico)
+
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + sum((tx_aprendizado * entrada * erro))
     return novo_peso
@@ -191,5 +206,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     print('Média de teste', np.mean(precisao_teste))
     print('Desvio de teste', np.std(precisao_teste))
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo, 400, [-1, 1])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-1, 1])
 
