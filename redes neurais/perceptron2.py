@@ -162,8 +162,6 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
 
     while execucoes < epocas:
 
-        np.random.shuffle(x_treinamento.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
-
         entradas = x_treinamento.values   
         soma = somatoria(entradas, pesos)
     

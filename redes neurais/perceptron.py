@@ -183,7 +183,7 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
         precisao = 0
         iteracao = 0
 
-        np.random.shuffle(x_treinamento.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
+        # x_treinamento = x_treinamento.sample(frac=1).reset_index(drop=True) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
 
         for i in x_treinamento.values:
             entradas = i   
