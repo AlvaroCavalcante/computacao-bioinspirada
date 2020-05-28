@@ -65,11 +65,6 @@ for i in classe:
     
 classe_nova = np.array(classe_nova).reshape(len(classe), 3)
 
-def substituir_classe_codificada(valor, classe_codificada):
-    return classe_codificada[valor]
-
-classe = classe.apply(lambda row: substituir_classe_codificada(row, classe_codificada))
-
 def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
     x_treinamento = previsores.sample(frac = p_treinamento)
     y_treinamento = classe[x_treinamento.index]
