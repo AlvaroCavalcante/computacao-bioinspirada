@@ -188,11 +188,18 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
 previsores['bias'] = 1
 
 def plotar_convergencia(precisao_teste, precisao_treinamento):
-    plt.plot(precisao_teste)
-    plt.show()
-    plt.plot(precisao_treinamento)
-    plt.show()
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 8))
+    
+    axes[0].plot(precisao_treinamento, color = 'blue')
+    axes[0].legend(['Treinamento'])
 
+    axes[1].plot(precisao_teste, color = 'orange')
+    axes[1].legend(['Teste'])
+
+    plt.xlabel('Épocas')
+    plt.ylabel('Precisão')
+    plt.show()
+    
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
                         tx_aprendizado = 0.001):
     precisao_treinamento = []
