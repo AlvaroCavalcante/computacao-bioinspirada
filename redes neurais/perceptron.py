@@ -139,7 +139,7 @@ def funcao_custo_rmse(valor_correto, valor_previsto, valor_ativacao):
     return erro, math.sqrt(valor_erro) # / len(previsores) essa parte é apenas para atualização em epoca
 
 
-def plotar_convergencia(precisao_teste, precisao_treinamento):
+def plotar_convergencia(precisao_treinamento, precisao_teste):
     plt.plot(precisao_teste)
     plt.show()
     plt.plot(precisao_treinamento)
