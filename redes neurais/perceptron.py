@@ -220,8 +220,8 @@ previsores['bias'] = 1
 
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
                         tx_aprendizado = 0.001):
-    precisao_treinamento = []
-    precisao_teste = []
+    precisao_treinamento = [0]
+    precisao_teste = [0]
     resultado_final = []
 
     for i in range(30):
@@ -231,8 +231,8 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste, tx_aprendizado)
                                      
-        precisao_treinamento.append(max(treinamento[0]))
-        precisao_teste.append(max(treinamento[1]))
+        precisao_treinamento = treinamento[0] if max(treinamento[0]) >= max(precisao_treinamento) else precisao_treinamento
+        precisao_teste = treinamento[1] if max(treinamento[1]) >= max(precisao_teste) else precisao_teste
 
         resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
 

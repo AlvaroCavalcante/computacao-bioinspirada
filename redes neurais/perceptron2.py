@@ -199,23 +199,26 @@ def plotar_convergencia(precisao_teste, precisao_treinamento):
     plt.xlabel('Épocas')
     plt.ylabel('Precisão')
     plt.show()
-    
+
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
                         tx_aprendizado = 0.001):
-    precisao_treinamento = []
-    precisao_teste = []
+    precisao_treinamento = [0]
+    precisao_teste = [0]
+    resultado_final = []
 
-    for i in range(1):
+    for i in range(5):
         pesos = inicializar_pesos(dominio_pesos)
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe_nova, 0.7, 0.15, 0.15)
 
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste, tx_aprendizado)
                                      
-        precisao_treinamento.append(max(treinamento[0]))
-        precisao_teste.append(max(treinamento[1]))
+        precisao_treinamento = treinamento[0] if max(treinamento[0]) >= max(precisao_treinamento) else precisao_treinamento
+        precisao_teste = treinamento[1] if max(treinamento[1]) >= max(precisao_teste) else precisao_teste
 
-    plotar_convergencia(treinamento[0], treinamento[1])
+        resultado_final = testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo)
+
+    plotar_convergencia(precisao_treinamento, precisao_teste)
 
     print('Melhor precisão de treinamento', max(precisao_treinamento))
     print('Média de treinamento', np.mean(treinamento))
