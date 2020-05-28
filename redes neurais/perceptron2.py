@@ -199,7 +199,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     precisao_teste = []
 
     for i in range(1):
-        pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
+        pesos = inicializar_pesos(dominio_pesos)
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe_nova, 0.7, 0.15, 0.15)
 
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
