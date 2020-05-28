@@ -141,11 +141,11 @@ def funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao):
 
     return sum(erro), acerto, sum(soma_erro_quadratico)
 
-def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.001):
+def atualizar_bias(entrada, peso, erro, tx_aprendizado):
     novo_peso = peso + np.float64(tx_aprendizado * erro)
     return novo_peso
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado):
     novo_peso = peso + np.mean((tx_aprendizado * entrada * erro))
     return novo_peso
 
@@ -160,7 +160,7 @@ def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     return acertos / len(x_previsores)
 
 def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
-                                     x_teste, y_teste):
+                                     x_teste, y_teste, tx_aprendizado):
     execucoes = 0
     precisoes_treinamento = []
     precisoes_teste = []
@@ -179,9 +179,9 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
 
         for i in range(entradas.shape[1]): # o for tem que atualizar cada peso da camada
             if i == 4:
-                novo_peso = atualizar_bias(entradas[:, i], pesos[i], valor_erro)
+                novo_peso = atualizar_bias(entradas[:, i], pesos[i], valor_erro, tx_aprendizado)
             else:
-                novo_peso = atualizar_peso(entradas[:, i], pesos[i], valor_erro)
+                novo_peso = atualizar_peso(entradas[:, i], pesos[i], valor_erro, tx_aprendizado)
             pesos[count] = novo_peso
             count += 1
         
@@ -198,16 +198,17 @@ def plotar_convergencia(precisao_teste, precisao_treinamento):
     plt.plot(precisao_treinamento)
     plt.show()
 
-def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1]):
+def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
+                        tx_aprendizado = 0.001):
     precisao_treinamento = []
     precisao_teste = []
 
-    for i in range(30):
+    for i in range(1):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe_nova, 0.7, 0.15, 0.15)
 
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
-                                     x_teste, y_teste)
+                                     x_teste, y_teste, tx_aprendizado)
                                      
         precisao_treinamento.append(max(treinamento[0]))
         precisao_teste.append(max(treinamento[1]))

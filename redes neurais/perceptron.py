@@ -116,11 +116,11 @@ def funcao_custo(valor_correto, valor_previsto, valor_ativacao):
     valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
     return sum(erro), sum(valor_erro) # valor escalar
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
-def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.001):
+def atualizar_bias(entrada, peso, erro, tx_aprendizado):
     novo_peso = peso + np.float64(tx_aprendizado * erro)
     return novo_peso
 
@@ -174,7 +174,8 @@ def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     
     return precisao
 
-def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_teste, y_teste):
+def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_teste, y_teste,
+            tx_aprendizado):
     execucoes = 0
     precisoes_treinamento = [0]
     precisoes_teste = [0]
@@ -198,9 +199,9 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
 
                 for i in entradas:
                     if count == len(entradas) - 1:
-                        novo_peso = atualizar_bias(i, pesos[count], valor_erro)
+                        novo_peso = atualizar_bias(i, pesos[count], valor_erro, tx_aprendizado)
                     else:
-                        novo_peso = atualizar_peso(i, pesos[count], valor_erro)
+                        novo_peso = atualizar_peso(i, pesos[count], valor_erro, tx_aprendizado)
                     
                     pesos[count] = novo_peso
                     count += 1
@@ -217,7 +218,8 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
 
 previsores['bias'] = 1
 
-def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1]):
+def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
+                        tx_aprendizado = 0.001):
     precisao_treinamento = []
     precisao_teste = []
     resultado_final = []
@@ -227,7 +229,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
-                                     x_teste, y_teste)
+                                     x_teste, y_teste, tx_aprendizado)
                                      
         precisao_treinamento.append(max(treinamento[0]))
         precisao_teste.append(max(treinamento[1]))
