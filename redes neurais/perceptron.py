@@ -82,7 +82,7 @@ def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
 
 def inicializar_pesos(dominio):
     pesos_final = []
-    
+    # random.seed(40)
     for i in range(len(previsores.columns)):
         pesos = [] 
         for j in range(len(dict_classes)):
@@ -116,11 +116,11 @@ def funcao_custo(valor_correto, valor_previsto, valor_ativacao):
     valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
     return sum(erro), sum(valor_erro) # valor escalar
 
-def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.1):
+def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + (tx_aprendizado * entrada * erro)
     return novo_peso
 
-def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.1):
+def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.001):
     novo_peso = peso + np.float64(tx_aprendizado * erro)
     return novo_peso
 
@@ -237,5 +237,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     plotar_convergencia(treinamento[0], treinamento[1])
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 300, [-1, 1])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 

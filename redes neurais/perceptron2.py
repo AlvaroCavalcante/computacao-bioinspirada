@@ -2,6 +2,7 @@ import random
 import numpy as np
 import pandas as pd
 import math 
+import matplotlib.pyplot as plt
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 # dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/wine.csv', header = 0)
@@ -88,7 +89,7 @@ def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
 
 def inicializar_pesos(dominio):
     pesos_final = []
-    
+    # random.seed(40)
     for i in range(len(previsores.columns)):
         pesos = [] 
         for j in range(len(dict_classes)):
@@ -140,8 +141,12 @@ def funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao):
 
     return sum(erro), acerto, sum(soma_erro_quadratico)
 
+def atualizar_bias(entrada, peso, erro, tx_aprendizado = 0.001):
+    novo_peso = peso + np.float64(tx_aprendizado * erro)
+    return novo_peso
+
 def atualizar_peso(entrada, peso, erro, tx_aprendizado = 0.001):
-    novo_peso = peso + sum((tx_aprendizado * entrada * erro))
+    novo_peso = peso + np.mean((tx_aprendizado * entrada * erro))
     return novo_peso
 
 def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
@@ -173,7 +178,10 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
         precisoes_treinamento.append(acertos / len(x_treinamento))    
 
         for i in range(entradas.shape[1]): # o for tem que atualizar cada peso da camada
-            novo_peso = atualizar_peso(entradas[:, i], pesos[i], valor_erro)
+            if i == 4:
+                novo_peso = atualizar_bias(entradas[:, i], pesos[i], valor_erro)
+            else:
+                novo_peso = atualizar_peso(entradas[:, i], pesos[i], valor_erro)
             pesos[count] = novo_peso
             count += 1
         
@@ -184,6 +192,11 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
 
 previsores['bias'] = 1
 
+def plotar_convergencia(precisao_teste, precisao_treinamento):
+    plt.plot(precisao_teste)
+    plt.show()
+    plt.plot(precisao_treinamento)
+    plt.show()
 
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1]):
     precisao_treinamento = []
@@ -199,6 +212,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         precisao_treinamento.append(max(treinamento[0]))
         precisao_teste.append(max(treinamento[1]))
 
+    plotar_convergencia(treinamento[0], treinamento[1])
 
     print('Melhor precisão de treinamento', max(precisao_treinamento))
     print('Média de treinamento', np.mean(treinamento))
@@ -208,5 +222,5 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     print('Média de teste', np.mean(precisao_teste))
     print('Desvio de teste', np.std(precisao_teste))
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-1, 1])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 
