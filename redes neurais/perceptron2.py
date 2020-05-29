@@ -159,6 +159,7 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
     execucoes = 0
     precisoes_treinamento = []
     precisoes_teste = []
+    melhores_pesos = []
 
     while execucoes < epocas:
 
@@ -166,11 +167,13 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
         soma = somatoria(entradas, pesos)
     
         neuronio_excitado, valor_ativacao = f_ativacao(soma)
-    
+
         erro, acertos, valor_erro = f_custo(y_treinamento, neuronio_excitado, valor_ativacao)
     
         count = 0
         precisoes_treinamento.append(acertos / len(x_treinamento))    
+
+        melhores_pesos = pesos.copy() if precisoes_treinamento[execucoes] >= max(precisoes_treinamento) else melhores_pesos
 
         for i in range(entradas.shape[1]): # o for tem que atualizar cada peso da camada
             if i == 4:
@@ -183,11 +186,22 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
         precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
         execucoes += 1
     
-    return precisoes_treinamento, precisoes_teste
+    return precisoes_treinamento, precisoes_teste, melhores_pesos
 
 previsores['bias'] = 1
 
-def plotar_convergencia(precisao_teste, precisao_treinamento):
+def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
+    print('Melhor precisão de treinamento', max(precisao_treinamento))
+    print('Melhor precisão de teste', max(precisao_teste))
+    print('Melhor precisão de validação', max(resultado_final))
+    print('Média precisão de treinamento', np.mean(precisao_treinamento))
+    print('Média precisão de teste', np.mean(precisao_teste))
+    print('Média precisão de validação', np.mean(resultado_final))
+    print('Desvio Padrão precisão de treinamento', np.std(precisao_treinamento))
+    print('Desvio Padrão precisão de teste', np.std(precisao_teste))
+    print('Desvio Padrão precisão de validação', np.std(resultado_final))
+
+def plotar_convergencia(precisao_treinamento, precisao_teste):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 8))
     
     axes[0].plot(precisao_treinamento, color = 'blue')
@@ -202,31 +216,30 @@ def plotar_convergencia(precisao_teste, precisao_treinamento):
 
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
                         tx_aprendizado = 0.001):
-    precisao_treinamento = [0]
-    precisao_teste = [0]
+    
+    convergencia_treinamento = [0]
+    convergencia_teste = [0]
+    precisao_treinamento = []
+    precisao_teste = []
     resultado_final = []
 
-    for i in range(5):
+    for i in range(30):
         pesos = inicializar_pesos(dominio_pesos)
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe_nova, 0.7, 0.15, 0.15)
 
         treinamento = treinar(epocas, funcao_ativacao, funcao_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste, tx_aprendizado)
                                      
-        precisao_treinamento = treinamento[0] if max(treinamento[0]) >= max(precisao_treinamento) else precisao_treinamento
-        precisao_teste = treinamento[1] if max(treinamento[1]) >= max(precisao_teste) else precisao_teste
+        convergencia_treinamento = treinamento[0] if max(treinamento[0]) >= max(convergencia_treinamento) else convergencia_treinamento
+        convergencia_teste = treinamento[1] if max(treinamento[1]) >= max(convergencia_teste) else convergencia_teste
 
-        resultado_final = testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo)
+        precisao_treinamento.append(max(treinamento[0]))
+        precisao_teste.append(max(treinamento[1]))
+        resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
 
-    plotar_convergencia(precisao_treinamento, precisao_teste)
+    plotar_convergencia(convergencia_treinamento, convergencia_teste)
+    exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
-    print('Melhor precisão de treinamento', max(precisao_treinamento))
-    print('Média de treinamento', np.mean(treinamento))
-    print('Desvio de treinamento', np.std(treinamento))
-
-    print('Melhor precisão de teste', max(precisao_teste))
-    print('Média de teste', np.mean(precisao_teste))
-    print('Desvio de teste', np.std(precisao_teste))
 
 executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 
