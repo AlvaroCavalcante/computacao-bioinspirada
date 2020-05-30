@@ -132,9 +132,9 @@ def funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao):
             acerto += 1
 
     erro_quadratico = list(map(lambda x: x**2, valor_erro))
-    soma_erro_quadratico = sum(erro_quadratico)
+    erro_quadratico_medio = sum(erro_quadratico) / len(valor_correto)
 
-    return sum(erro), acerto, sum(soma_erro_quadratico)
+    return sum(erro), acerto, sum(erro_quadratico_medio)
 
 def atualizar_bias(entrada, peso, erro, tx_aprendizado):
     novo_peso = peso + np.float64(tx_aprendizado * erro)
@@ -215,7 +215,7 @@ def plotar_convergencia(precisao_treinamento, precisao_teste):
     plt.show()
 
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
-                        tx_aprendizado = 0.001):
+                        tx_aprendizado = 0.1):
     
     convergencia_treinamento = [0]
     convergencia_teste = [0]
