@@ -125,13 +125,13 @@ def atualizar_bias(entrada, peso, erro, tx_aprendizado):
     return novo_peso
 
 def funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao):
-    erro = list(abs(np.array(valor_correto) - np.array(valor_previsto)))
+    erro = valor_correto != valor_previsto
 
     valor_erro = list(abs(np.array(valor_correto) - np.array(valor_ativacao)))
     erro_quadratico = list(map(lambda x: math.pow(x, 2), valor_erro))
     soma_erro_quadratico = sum(erro_quadratico)
 
-    return sum(erro), soma_erro_quadratico # / len(previsores) essa parte é apenas para atualização em epoca
+    return erro, soma_erro_quadratico # / len(previsores) essa parte é apenas para atualização em epoca
 
 def funcao_custo_rmse(valor_correto, valor_previsto, valor_ativacao):
     erro, valor_erro = funcao_custo_mse(valor_correto, valor_previsto, valor_ativacao)
@@ -194,7 +194,7 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
         
             erro, valor_erro = f_custo(y_treinamento[iteracao], neuronio_excitado, valor_ativacao)
 
-            if erro > 0:
+            if erro == True:
                 count = 0
 
                 for i in entradas:
