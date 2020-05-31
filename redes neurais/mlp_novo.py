@@ -57,7 +57,7 @@ def feed_foward(pesos):
 
     return ativacao
 
-def calcular_derivada_parcial(valor):
+def calcular_derivada_parcial(valor): # Função ativação tem que ser sigmoid
     return valor * (1 - valor)
 
 def calcular_delta(erro, derivada):
@@ -68,15 +68,13 @@ def calcular_delta_oculto(pesos, delta_saida, derivada):
 
     pesos_delta_saida = delta_saida.dot(matriz_pesos)
 
-    pesos_delta_saida = np.transpose(pesos_delta_saida)
-
-    return derivada.dot(pesos_delta_saida) # as matrizes precisam estar em uma dimensão diferente uma da outra, nesse caso 4,3 e 3,4
+    return derivada * np.array(pesos_delta_saida) # as matrizes precisam estar em uma dimensão diferente uma da outra, nesse caso 4,3 e 3,4
 
 def backpropagation(pesos, delta_saida, ativacao):
-    deltas_camadas_ocultas = []
+    deltas_camadas_ocultas = []  # pegar a derivada da saída
 
     for i in range(len(pesos) -1):
-        derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)])
+        derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)]) # pegar de trás para frente a derivada de cada neurônio
         deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[(len(pesos) - 1) - 0], delta_saida, derivada))
 
     atualizar_peso(ativacao, pesos, deltas_camadas_ocultas)
