@@ -29,13 +29,13 @@ def atualizar_peso(entrada, peso, delta, tx_aprendizado = 0.2, momento = 1):
     novo_peso = (peso * momento) + (np.dot(np.asmatrix(entrada), ) * tx_aprendizado)
     return novo_peso
 
-def inicializar_pesos(neuronios_camada):
+def inicializar_pesos(neuronios_camada, dominio = [-0.05, 0.05]):
     pesos_final = []
 
     for i in range(len(neuronios_camada) - 1):
         pesos = []
         for j in range(neuronios_camada[i]):
-            pesos.append([random.random() for i in range(neuronios_camada[i + 1])])
+            pesos.append([random.uniform(dominio[0], dominio[1]) for i in range(neuronios_camada[i + 1])])
         pesos_final.append(pesos)
     return pesos_final
 
@@ -116,8 +116,7 @@ def treinar(epocas, neuronios_camada):
         execucoes += 1
     print('Precisão final: ', precisao)
 
-neuronios_camada = [len(previsores.columns)] #adicionado neurônios da camada de entrada
-neuronios_camada.append(3) #camada oculta
+neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
