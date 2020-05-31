@@ -23,7 +23,7 @@ def funcao_degrau(valor):
     return 0
 
 def funcao_sigmoid(valor):
-    resultado = 1 / (1 + math.e ** -valor)
+    resultado = 1 / (1 + np.exp(-valor))
     return resultado
 
 def funcao_custo(valor_correto, valor_previsto):
@@ -58,9 +58,7 @@ def feed_foward(pesos):
     return ativacao
 
 def calcular_derivada_parcial(valor):
-    y = funcao_sigmoid(valor)
-    derivada_parcial = y * (1 - y)
-    return derivada_parcial
+    return valor * (1 - valor)
 
 def calcular_delta(erro, derivada):
     return erro * derivada
@@ -100,7 +98,7 @@ def treinar(epocas, neuronios_camada):
 
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
         
-        derivada_saida = calcular_derivada_parcial(erro)
+        derivada_saida = calcular_derivada_parcial(resultado_camada_saida)
         delta_saida = calcular_delta(erro, derivada_saida)
 
         backpropagation(pesos, delta_saida, ativacao) 
