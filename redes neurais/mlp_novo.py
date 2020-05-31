@@ -3,10 +3,16 @@ import numpy as np
 import pandas as pd
 import math
 
-df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,1]], columns = ['X', 'Y', 'CLASSE'])
+df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CLASSE'])
 
 previsores = df.iloc[:, 0:2] 
 classe = df['CLASSE']
+
+
+pesos0 = np.array([[-0.424, -0.740, -0.961],
+                  [0.358, -0.577, -0.469]])
+    
+pesos1 = np.array([[-0.017], [-0.893], [0.148]])
 
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
@@ -80,15 +86,16 @@ def backpropagation(pesos, delta_saida, ativacao):
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
 
+    pesos[0] = pesos0
+    pesos[1] = pesos1
+    
     execucoes = 0
     while execucoes < epocas:
         iteracao = 0
-        
-        np.random.shuffle(previsores.values) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
-        
+               
         ativacao = feed_foward(pesos)
 
-        resultado_camada_saida = ativacao[2:3][0]
+        resultado_camada_saida = ativacao[len(ativacao) - 1]
         classe_reshaped = classe.values.reshape(-1,1)
 
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
