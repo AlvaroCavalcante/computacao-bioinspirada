@@ -8,19 +8,13 @@ df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CL
 previsores = df.iloc[:, 0:2] 
 classe = df['CLASSE']
 
-
 pesos0 = np.array([[-0.424, -0.740, -0.961],
-                  [0.358, -0.577, -0.469]])
+                   [0.358, -0.577, -0.469]])
     
 pesos1 = np.array([[-0.017], [-0.893], [0.148]])
 
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
-
-def funcao_degrau(valor):
-    if valor >= 1:
-        return 1
-    return 0
 
 def funcao_sigmoid(valor):
     resultado = 1 / (1 + np.exp(-valor))
@@ -30,7 +24,7 @@ def funcao_custo(valor_correto, valor_previsto):
     erro = valor_correto - valor_previsto # não gerar valores negativos
     return erro
 
-def inicializar_pesos(neuronios_camada, dominio = [-0.05, 0.05]):
+def inicializar_pesos(neuronios_camada, dominio = [-1, 1]):
     pesos_final = []
 
     for i in range(len(neuronios_camada) - 1):
@@ -89,10 +83,9 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado =
 
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
+    # pesos[0] = pesos0
+    # pesos[1] = pesos1
 
-    pesos[0] = pesos0
-    pesos[1] = pesos1
-    
     execucoes = 0
     while execucoes < epocas:               
         ativacao = feed_foward(pesos)
