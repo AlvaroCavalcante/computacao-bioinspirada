@@ -70,14 +70,24 @@ def calcular_delta_oculto(pesos, delta_saida, derivada):
 
     return derivada * np.array(pesos_delta_saida) # as matrizes precisam estar em uma dimensão diferente uma da outra, nesse caso 4,3 e 3,4
 
-def backpropagation(pesos, delta_saida, ativacao):
+def get_delta_oculto(pesos, delta_saida, ativacao):
     deltas_camadas_ocultas = []  # pegar a derivada da saída
 
     for i in range(len(pesos) -1):
         derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)]) # pegar de trás para frente a derivada de cada neurônio
         deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[(len(pesos) - 1) - 0], delta_saida, derivada))
 
-    atualizar_peso(ativacao, pesos, deltas_camadas_ocultas)
+    return deltas_camadas_ocultas
+
+def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado = 0.001, momento = 1):
+    for i in range(len(pesos) - 1):
+        if i == 0:
+            camada_transposta = np.transpose(ativacao[(len(ativacao)- 1) - (i + 1)])
+            peso_atualizado = camada_transposta.dot(delta_saida)
+        else:
+            peso_atualizado = ativacao[(len(ativacao)- 1) - (i + 1)] * delta_oculto
+
+    return peso_atualizado
 
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
@@ -99,7 +109,9 @@ def treinar(epocas, neuronios_camada):
         derivada_saida = calcular_derivada_parcial(resultado_camada_saida)
         delta_saida = calcular_delta(erro, derivada_saida)
 
-        backpropagation(pesos, delta_saida, ativacao) 
+        delta_camada_oculta = get_delta_oculto(pesos, delta_saida, ativacao)
+
+        backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta) 
 
         erro_medio_absoluto = np.mean(erro)
 
