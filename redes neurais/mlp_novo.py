@@ -27,7 +27,7 @@ def funcao_sigmoid(valor):
     return resultado
 
 def funcao_custo(valor_correto, valor_previsto):
-    erro = abs(valor_correto - valor_previsto) # não gerar valores negativos
+    erro = valor_correto - valor_previsto # não gerar valores negativos
     return erro
 
 def atualizar_peso(entrada, peso, delta, tx_aprendizado = 0.2, momento = 1):
