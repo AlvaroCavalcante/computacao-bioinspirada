@@ -30,11 +30,6 @@ def funcao_custo(valor_correto, valor_previsto):
     erro = valor_correto - valor_previsto # não gerar valores negativos
     return erro
 
-def atualizar_peso(entrada, peso, delta, tx_aprendizado = 0.2, momento = 1):
-    delta_t = np.transpose(np.asmatrix(delta).reshape(-1, 1))
-    novo_peso = (peso * momento) + (np.dot(np.asmatrix(entrada), ) * tx_aprendizado)
-    return novo_peso
-
 def inicializar_pesos(neuronios_camada, dominio = [-0.05, 0.05]):
     pesos_final = []
 
@@ -82,13 +77,13 @@ def get_delta_oculto(pesos, delta_saida, ativacao):
 def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado = 0.3, momento = 1):
     for i in range(len(pesos)):
         if i == 0:
-            camada_transposta = np.transpose(ativacao[(len(ativacao)- 1) - (i + 1)])
+            camada_transposta = np.transpose(ativacao[i])
             delta_x_entrada = camada_transposta.dot(delta_saida)
             
-            peso_atualizado = (pesos[len(pesos) - 1] * momento) + (tx_aprendizado * delta_x_entrada)
+            peso_atualizado = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada)
         else:
-            camada_transposta = np.transpose(ativacao[(len(ativacao)- 1) - (i + 1)])
-            peso_atualizado = (pesos[i] * momento) + (tx_aprendizagem * camada_transposta.dot(delta_oculto))
+            camada_transposta = np.transpose(previsores)
+            peso_atualizado = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * camada_transposta.dot(delta_oculto[0]))
             
     return peso_atualizado
 
@@ -116,23 +111,10 @@ def treinar(epocas, neuronios_camada):
 
         backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta) 
 
-        erro_medio_absoluto = np.mean(erro)
-
-        if erro_medio_absoluto > 0:
-            precisao = 1 - erro_medio_absoluto # estratégia de atualização por épocas ao invés de por registros igual o perceptron.
-            print('Precisão: ', round((precisao) * 100, 2))
-            
-            count = 0
-            
-            for i in camada_entrada:
-                novo_peso = atualizar_peso(i, pesos[count], erro)
-                pesos[count] = novo_peso
-                count += 1
-            
-            iteracao += 1
+        erro_medio_absoluto = np.mean(np.abs(erro))
+        print('Erro', erro_medio_absoluto)
           
         execucoes += 1
-    print('Precisão final: ', precisao)
 
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
