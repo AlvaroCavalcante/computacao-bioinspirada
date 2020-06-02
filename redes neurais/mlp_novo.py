@@ -80,12 +80,12 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado =
             camada_transposta = np.transpose(ativacao[i])
             delta_x_entrada = camada_transposta.dot(delta_saida)
             
-            peso_atualizado = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada)
+            pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada)
         else:
             camada_transposta = np.transpose(previsores)
-            peso_atualizado = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * camada_transposta.dot(delta_oculto[0]))
+            pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * camada_transposta.dot(delta_oculto[0])).values
             
-    return peso_atualizado
+    return pesos
 
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
@@ -94,25 +94,23 @@ def treinar(epocas, neuronios_camada):
     pesos[1] = pesos1
     
     execucoes = 0
-    while execucoes < epocas:
-        iteracao = 0
-               
+    while execucoes < epocas:               
         ativacao = feed_foward(pesos)
 
         resultado_camada_saida = ativacao[len(ativacao) - 1]
         classe_reshaped = classe.values.reshape(-1,1)
 
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
+
+        erro_medio_absoluto = np.mean(np.abs(erro))
+        print('Erro', erro_medio_absoluto)
         
         derivada_saida = calcular_derivada_parcial(resultado_camada_saida)
         delta_saida = calcular_delta(erro, derivada_saida)
 
         delta_camada_oculta = get_delta_oculto(pesos, delta_saida, ativacao)
 
-        backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta) 
-
-        erro_medio_absoluto = np.mean(np.abs(erro))
-        print('Erro', erro_medio_absoluto)
+        pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta) 
           
         execucoes += 1
 
@@ -120,4 +118,4 @@ neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada d
 neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
-treinar(20, neuronios_camada)
+treinar(10000, neuronios_camada)
