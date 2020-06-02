@@ -79,14 +79,17 @@ def get_delta_oculto(pesos, delta_saida, ativacao):
 
     return deltas_camadas_ocultas
 
-def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado = 0.001, momento = 1):
-    for i in range(len(pesos) - 1):
+def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado = 0.3, momento = 1):
+    for i in range(len(pesos)):
         if i == 0:
             camada_transposta = np.transpose(ativacao[(len(ativacao)- 1) - (i + 1)])
-            peso_atualizado = camada_transposta.dot(delta_saida)
+            delta_x_entrada = camada_transposta.dot(delta_saida)
+            
+            peso_atualizado = (pesos[len(pesos) - 1] * momento) + (tx_aprendizado * delta_x_entrada)
         else:
-            peso_atualizado = ativacao[(len(ativacao)- 1) - (i + 1)] * delta_oculto
-
+            camada_transposta = np.transpose(ativacao[(len(ativacao)- 1) - (i + 1)])
+            peso_atualizado = (pesos[i] * momento) + (tx_aprendizagem * camada_transposta.dot(delta_oculto))
+            
     return peso_atualizado
 
 def treinar(epocas, neuronios_camada):
