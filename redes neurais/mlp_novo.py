@@ -48,7 +48,7 @@ classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_c
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
-def funcao_sigmoid(valor):
+def funcao_ativacao_sigmoid(valor):
     resultado = 1 / (1 + np.exp(-valor))
     return resultado
 
@@ -71,10 +71,10 @@ def feed_foward(pesos):
     for i in range(len(pesos)):
         if i == 0:
             soma_sinapse = np.dot(previsores, pesos[i])
-            ativacao.append(funcao_sigmoid(soma_sinapse))
+            ativacao.append(funcao_ativacao_sigmoid(soma_sinapse))
         else:
             soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
-            ativacao.append(funcao_sigmoid(soma_sinapse))
+            ativacao.append(funcao_ativacao_sigmoid(soma_sinapse))
 
     return ativacao
 
@@ -113,7 +113,7 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado =
             
     return pesos
 
-def treinar(epocas, neuronios_camada):
+def treinar_mlp(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
     # pesos[0] = pesos0
     # pesos[1] = pesos1
@@ -144,4 +144,4 @@ neuronios_camada.append(3) #camada oculta
 # neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
-treinar(1000, neuronios_camada)
+treinar_mlp(1000, neuronios_camada)
