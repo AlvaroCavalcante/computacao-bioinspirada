@@ -53,7 +53,7 @@ def calcular_delta(erro, derivada):
     return erro * derivada
 
 def calcular_delta_oculto(pesos, delta_saida, derivada):
-    matriz_pesos = np.asmatrix(pesos).reshape(1, -1) # conceito de matriz transposta 
+    matriz_pesos = np.transpose(np.asmatrix(pesos)) #.reshape(1, -1) # conceito de matriz transposta 
 
     pesos_delta_saida = delta_saida.dot(matriz_pesos)
 
@@ -63,8 +63,8 @@ def get_delta_oculto(pesos, delta_saida, ativacao):
     deltas_camadas_ocultas = []  # pegar a derivada da saída
 
     for i in range(len(pesos) -1):
-        derivada = calcular_derivada_parcial(ativacao[(len(ativacao)- 1) - (i + 1)]) # pegar de trás para frente a derivada de cada neurônio
-        deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[(len(pesos) - 1) - 0], delta_saida, derivada))
+        derivada = calcular_derivada_parcial(ativacao[len(ativacao) - (i + 2)]) # pegar de trás para frente a derivada de cada neurônio
+        deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[len(pesos) - (i + 1)], delta_saida, derivada))
 
     return deltas_camadas_ocultas
 
@@ -109,6 +109,7 @@ def treinar(epocas, neuronios_camada):
 
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
+# neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
 treinar(10000, neuronios_camada)
