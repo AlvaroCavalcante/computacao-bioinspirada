@@ -215,7 +215,7 @@ def plotar_convergencia(precisao_treinamento, precisao_teste):
     plt.show()
 
 def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
-                        tx_aprendizado = 0.1, exibir_resultados = True):
+                        tx_aprendizado = 0.1, mostrar_resultados = True):
     
     convergencia_treinamento = [0]
     convergencia_teste = [0]
@@ -237,14 +237,14 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         precisao_teste.append(max(treinamento[1]))
         resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
 
-    if exibir_resultados == True:
+    if mostrar_resultados == True:
         plotar_convergencia(convergencia_treinamento, convergencia_teste)
         exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
     return max(precisao_treinamento), max(precisao_teste), max(resultado_final)
 
 
-# executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 
 def buscar_parametros(lista_parametros):
                     import itertools
@@ -275,6 +275,6 @@ lista_parametros = { 'custo' : [funcao_custo, funcao_custo_mse],
                       'pesos': [0.5, 0.05, 0.005, 0.0005]
 }
 
-teste_parametrico = buscar_parametros(lista_parametros)
+# teste_parametrico = buscar_parametros(lista_parametros)
 
 print(teste_parametrico)
