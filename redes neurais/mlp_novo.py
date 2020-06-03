@@ -3,15 +3,47 @@ import numpy as np
 import pandas as pd
 import math
 
-df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CLASSE'])
+# df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CLASSE'])
+dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/breast_cancer.csv', header = 0)
 
-previsores = df.iloc[:, 0:2] 
-classe = df['CLASSE']
+dataframe = dataframe.drop(columns = 'id')
+dataframe = dataframe.iloc[:, 0:31] 
+
+# previsores = df.iloc[:, 0:2] 
+# classe = df['CLASSE']
+
+previsores = dataframe.iloc[:, 1:31] 
+classe = dataframe['diagnosis']
 
 pesos0 = np.array([[-0.424, -0.740, -0.961],
                    [0.358, -0.577, -0.469]])
     
 pesos1 = np.array([[-0.017], [-0.893], [0.148]])
+
+def z_score_normalization(value):
+    media = previsores[value.name].mean()
+    desvio_padrao = previsores[value.name].std()
+
+    return (value - media) / desvio_padrao
+
+previsores = previsores.apply(lambda row: z_score_normalization(row))
+
+def get_dicionario_classes(classe):
+    dict_classes = {}
+    count = 0
+    
+    for i in classe.unique():
+        dict_classes[i] = count
+        count += 1
+        
+    return dict_classes
+
+dict_classes = get_dicionario_classes(classe)
+
+def transformar_categorico_em_numerico(valor, dict_classes):
+    return dict_classes[valor]
+    
+classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes))
 
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
@@ -112,4 +144,4 @@ neuronios_camada.append(3) #camada oculta
 # neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
-treinar(10000, neuronios_camada)
+treinar(1000, neuronios_camada)
