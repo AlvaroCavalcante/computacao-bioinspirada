@@ -223,7 +223,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     precisao_teste = []
     resultado_final = []
 
-    for i in range(5):
+    for i in range(30):
         pesos = inicializar_pesos(dominio_pesos)
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe_nova, 0.7, 0.15, 0.15)
 
@@ -244,7 +244,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     return max(precisao_treinamento), max(precisao_teste), max(resultado_final)
 
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
+# executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 
 def buscar_parametros(lista_parametros):
                     import itertools
@@ -260,7 +260,7 @@ def buscar_parametros(lista_parametros):
                     melhor_precisao_validacao = 0
 
                     for i in combinacao_parametros:
-                        precisao_treinamento, precisao_teste, resultado_final = executar_perceptron(funcao_ativacao_sigmoid, i[0], 400, [-i[2], i[2]], i[1])
+                        precisao_treinamento, precisao_teste, resultado_final = executar_perceptron(funcao_ativacao_sigmoid, i[0], 400, [-i[2], i[2]], i[1], False)
                         
                         if resultado_final >= melhor_precisao_validacao:
                             melhor_precisao_teste = precisao_teste
@@ -275,6 +275,6 @@ lista_parametros = { 'custo' : [funcao_custo, funcao_custo_mse],
                       'pesos': [0.5, 0.05, 0.005, 0.0005]
 }
 
-# teste_parametrico = buscar_parametros(lista_parametros)
+teste_parametrico = buscar_parametros(lista_parametros)
 
 print(teste_parametrico)
