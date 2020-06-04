@@ -49,7 +49,7 @@ classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_c
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
-def funcao_sigmoid(valor):
+def funcao_ativacao_sigmoid(valor):
     resultado = 1 / (1 + np.exp(-valor))
     return resultado
 
@@ -67,15 +67,15 @@ def inicializar_pesos(neuronios_camada, dominio = [-1, 1]):
         pesos_final.append(pesos)
     return pesos_final
 
-def feed_foward(pesos, x_treinamento):
+def feed_foward(pesos, x_treinamento, f_ativacao):
     ativacao = []
     for i in range(len(pesos)):
         if i == 0:
             soma_sinapse = np.dot(x_treinamento, pesos[i])
-            ativacao.append(funcao_sigmoid(soma_sinapse))
+            ativacao.append(f_ativacao(soma_sinapse))
         else:
             soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
-            ativacao.append(funcao_sigmoid(soma_sinapse))
+            ativacao.append(f_ativacao(soma_sinapse))
 
     return ativacao
 
@@ -141,9 +141,8 @@ def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
 
 def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     precisao = 0
-    iteracao = 0
 
-    ativacao = feed_foward(pesos, x_previsores)
+    ativacao = feed_foward(pesos, x_previsores, f_ativacao)
 
     resultado_camada_saida = ativacao[len(ativacao) - 1]
     classe_reshaped = y_classe.values.reshape(-1,1)
@@ -152,7 +151,7 @@ def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
 
     return precisao
 
-def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
+def treinar(epocas, neuronios_camada, f_ativacao, f_custo, pesos, x_treinamento,
                                      y_treinamento, x_teste, y_teste, tx_aprendizado):
     execucoes = 0
     precisoes_treinamento = []
@@ -160,12 +159,12 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
     melhores_pesos = []
 
     while execucoes < epocas:               
-        ativacao = feed_foward(pesos, x_treinamento)
+        ativacao = feed_foward(pesos, x_treinamento, f_ativacao)
 
         resultado_camada_saida = ativacao[len(ativacao) - 1]
         classe_reshaped = y_treinamento.values.reshape(-1,1)
 
-        erro = funcao_custo(classe_reshaped, resultado_camada_saida)
+        erro = f_custo(classe_reshaped, resultado_camada_saida)
 
         precisoes_treinamento.append(get_precisao(classe_reshaped, resultado_camada_saida))
 
@@ -178,7 +177,7 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
 
         pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta, x_treinamento) 
         
-        precisoes_teste.append(testar(pesos, x_teste, y_teste, funcao_ativacao, funcao_custo))
+        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
         execucoes += 1
         
     return precisoes_treinamento, precisoes_teste, melhores_pesos
@@ -243,8 +242,4 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
     plotar_convergencia(convergencia_treinamento, convergencia_teste)   
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
-executar_mlp(funcao_sigmoid, funcao_custo, 300)
-
-# fig, ax = plt.subplots()
-# ax.plot(precisao)
-# plt.show()
+executar_mlp(funcao_ativacao_sigmoid, funcao_custo, 300)
