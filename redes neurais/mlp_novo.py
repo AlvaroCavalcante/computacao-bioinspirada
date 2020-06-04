@@ -123,11 +123,24 @@ def get_precisao(valor_correto, valor_previsto):
     precisao = (valor_correto == previsao).sum() / len(valor_correto)
     return precisao
 
-def treinar(epocas, neuronios_camada):
-    pesos = inicializar_pesos(neuronios_camada)
-    # pesos[0] = pesos0
-    # pesos[1] = pesos1
+def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
+    x_treinamento = previsores.sample(frac = p_treinamento)
+    y_treinamento = classe[x_treinamento.index]
+    
+    x_teste_sem_previsores = previsores.drop(x_treinamento.index)
+    nova_p_teste = p_teste / (1 - p_treinamento)
+    
+    x_teste = x_teste_sem_previsores.sample(frac = nova_p_teste)
+    y_teste = classe[x_teste.index]
+    
+    x_validacao = x_teste_sem_previsores.drop(x_teste.index)
+    y_validacao = classe[x_validacao.index]
+    
+    return x_treinamento.reset_index(drop=True), y_treinamento, \
+    x_teste.reset_index(drop=True), y_teste, x_validacao.reset_index(drop=True), y_validacao
 
+def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
+                                     y_treinamento, x_teste, y_teste, tx_aprendizado):
     execucoes = 0
     precisoes_treinamento = []
     
@@ -154,11 +167,31 @@ def treinar(epocas, neuronios_camada):
         
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
-# neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
-precisao = treinar(1000, neuronios_camada)
+def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
+                       tx_aprendizado = 0.001, mostrar_resultados = True):
 
-fig, ax = plt.subplots()
-ax.plot(precisao)
-plt.show()
+    convergencia_treinamento = [0]
+    convergencia_teste = [0]
+    precisao_treinamento = []
+    precisao_teste = []
+    resultado_final = []
+
+    for i in range(30):
+        x_treinamento, y_treinamento, x_teste, y_teste, \
+        x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
+
+        pesos = inicializar_pesos(neuronios_camada)
+
+
+        precisao = treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
+                                     y_treinamento, x_teste, y_teste, tx_aprendizado)
+
+        print(max(precisao))
+
+executar_mlp(funcao_sigmoid, funcao_custo, 300)
+
+# fig, ax = plt.subplots()
+# ax.plot(precisao)
+# plt.show()
