@@ -54,14 +54,8 @@ def funcao_sigmoid(valor):
     return resultado
 
 def funcao_custo(valor_correto, valor_previsto):
-    valor_erro = valor_correto - valor_previsto # não gerar valores negativos
-    
-    valor_previsto[valor_previsto >= 0.5] = 1
-    valor_previsto[valor_previsto < 0.5] = 0
-
-    precisao = (valor_correto == valor_previsto).sum() / len(valor_correto)
-    
-    return valor_erro, precisao
+    valor_erro = valor_correto - valor_previsto 
+    return valor_erro
 
 def inicializar_pesos(neuronios_camada, dominio = [-1, 1]):
     pesos_final = []
@@ -120,6 +114,15 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado =
             
     return pesos
 
+def get_precisao(valor_correto, valor_previsto):
+    previsao = valor_previsto.copy()
+
+    previsao[previsao >= 0.5] = 1
+    previsao[previsao < 0.5] = 0
+
+    precisao = (valor_correto == previsao).sum() / len(valor_correto)
+    return precisao
+
 def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
     # pesos[0] = pesos0
@@ -134,10 +137,10 @@ def treinar(epocas, neuronios_camada):
         resultado_camada_saida = ativacao[len(ativacao) - 1]
         classe_reshaped = classe.values.reshape(-1,1)
 
-        erro, precisao = funcao_custo(classe_reshaped, resultado_camada_saida)
+        erro = funcao_custo(classe_reshaped, resultado_camada_saida)
 
-        precisoes_treinamento.append(precisao)
-        
+        precisoes_treinamento.append(get_precisao(classe_reshaped, resultado_camada_saida))
+
         derivada_saida = calcular_derivada_parcial(resultado_camada_saida)
         delta_saida = calcular_delta(erro, derivada_saida)
 
