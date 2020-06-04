@@ -2,6 +2,7 @@ import random
 import numpy as np
 import pandas as pd
 import math
+import matplotlib.pyplot as plt
 
 # df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CLASSE'])
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/breast_cancer.csv', header = 0)
@@ -48,13 +49,19 @@ classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_c
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
 
-def funcao_ativacao_sigmoid(valor):
+def funcao_sigmoid(valor):
     resultado = 1 / (1 + np.exp(-valor))
     return resultado
 
 def funcao_custo(valor_correto, valor_previsto):
-    erro = valor_correto - valor_previsto # não gerar valores negativos
-    return erro
+    valor_erro = valor_correto - valor_previsto # não gerar valores negativos
+    
+    valor_previsto[valor_previsto >= 0.5] = 1
+    valor_previsto[valor_previsto < 0.5] = 0
+
+    precisao = (valor_correto == valor_previsto).sum() / len(valor_correto)
+    
+    return valor_erro, precisao
 
 def inicializar_pesos(neuronios_camada, dominio = [-1, 1]):
     pesos_final = []
@@ -71,10 +78,10 @@ def feed_foward(pesos):
     for i in range(len(pesos)):
         if i == 0:
             soma_sinapse = np.dot(previsores, pesos[i])
-            ativacao.append(funcao_ativacao_sigmoid(soma_sinapse))
+            ativacao.append(funcao_sigmoid(soma_sinapse))
         else:
             soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
-            ativacao.append(funcao_ativacao_sigmoid(soma_sinapse))
+            ativacao.append(funcao_sigmoid(soma_sinapse))
 
     return ativacao
 
@@ -113,22 +120,23 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado =
             
     return pesos
 
-def treinar_mlp(epocas, neuronios_camada):
+def treinar(epocas, neuronios_camada):
     pesos = inicializar_pesos(neuronios_camada)
     # pesos[0] = pesos0
     # pesos[1] = pesos1
 
     execucoes = 0
+    precisoes_treinamento = []
+    
     while execucoes < epocas:               
         ativacao = feed_foward(pesos)
 
         resultado_camada_saida = ativacao[len(ativacao) - 1]
         classe_reshaped = classe.values.reshape(-1,1)
 
-        erro = funcao_custo(classe_reshaped, resultado_camada_saida)
+        erro, precisao = funcao_custo(classe_reshaped, resultado_camada_saida)
 
-        erro_medio_absoluto = np.mean(np.abs(erro))
-        print('Erro', erro_medio_absoluto)
+        precisoes_treinamento.append(precisao)
         
         derivada_saida = calcular_derivada_parcial(resultado_camada_saida)
         delta_saida = calcular_delta(erro, derivada_saida)
@@ -138,10 +146,16 @@ def treinar_mlp(epocas, neuronios_camada):
         pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta) 
           
         execucoes += 1
-
+        
+    return precisoes_treinamento
+        
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
 # neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
-treinar_mlp(1000, neuronios_camada)
+precisao = treinar(1000, neuronios_camada)
+
+fig, ax = plt.subplots()
+ax.plot(precisao)
+plt.show()
