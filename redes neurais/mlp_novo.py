@@ -139,11 +139,25 @@ def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
     return x_treinamento.reset_index(drop=True), y_treinamento, \
     x_teste.reset_index(drop=True), y_teste, x_validacao.reset_index(drop=True), y_validacao
 
+def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
+    precisao = 0
+    iteracao = 0
+
+    ativacao = feed_foward(pesos, x_previsores)
+
+    resultado_camada_saida = ativacao[len(ativacao) - 1]
+    classe_reshaped = y_classe.values.reshape(-1,1)
+
+    precisao = get_precisao(classe_reshaped, resultado_camada_saida)
+
+    return precisao
+
 def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
                                      y_treinamento, x_teste, y_teste, tx_aprendizado):
     execucoes = 0
     precisoes_treinamento = []
-    
+    precisoes_teste = []
+
     while execucoes < epocas:               
         ativacao = feed_foward(pesos, x_treinamento)
 
@@ -160,10 +174,11 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
         delta_camada_oculta = get_delta_oculto(pesos, delta_saida, ativacao)
 
         pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta, x_treinamento) 
-          
+        
+        precisoes_teste.append(testar(pesos, x_teste, y_teste, funcao_ativacao, funcao_custo))
         execucoes += 1
         
-    return precisoes_treinamento
+    return precisoes_treinamento, precisoes_teste
         
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
@@ -188,7 +203,8 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
         precisao = treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
                                      y_treinamento, x_teste, y_teste, tx_aprendizado)
 
-        print(max(precisao))
+        print('treino', max(precisao[0]))
+        print('teste', max(precisao[1]))
 
 executar_mlp(funcao_sigmoid, funcao_custo, 300)
 
