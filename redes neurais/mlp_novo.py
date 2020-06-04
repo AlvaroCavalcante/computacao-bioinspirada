@@ -67,11 +67,11 @@ def inicializar_pesos(neuronios_camada, dominio = [-1, 1]):
         pesos_final.append(pesos)
     return pesos_final
 
-def feed_foward(pesos):
+def feed_foward(pesos, x_treinamento):
     ativacao = []
     for i in range(len(pesos)):
         if i == 0:
-            soma_sinapse = np.dot(previsores, pesos[i])
+            soma_sinapse = np.dot(x_treinamento, pesos[i])
             ativacao.append(funcao_sigmoid(soma_sinapse))
         else:
             soma_sinapse = np.dot(ativacao[i - 1], pesos[i])
@@ -101,7 +101,7 @@ def get_delta_oculto(pesos, delta_saida, ativacao):
 
     return deltas_camadas_ocultas
 
-def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado = 0.3, momento = 1):
+def backpropagation(pesos, ativacao, delta_saida, delta_oculto, x_treinamento, tx_aprendizado = 0.3, momento = 1):
     for i in range(len(pesos)):
         if i == 0:
             camada_transposta = np.transpose(ativacao[i])
@@ -109,7 +109,7 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, tx_aprendizado =
             
             pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada)
         else:
-            camada_transposta = np.transpose(previsores)
+            camada_transposta = np.transpose(x_treinamento)
             pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * camada_transposta.dot(delta_oculto[0])).values
             
     return pesos
@@ -145,10 +145,10 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
     precisoes_treinamento = []
     
     while execucoes < epocas:               
-        ativacao = feed_foward(pesos)
+        ativacao = feed_foward(pesos, x_treinamento)
 
         resultado_camada_saida = ativacao[len(ativacao) - 1]
-        classe_reshaped = classe.values.reshape(-1,1)
+        classe_reshaped = y_treinamento.values.reshape(-1,1)
 
         erro = funcao_custo(classe_reshaped, resultado_camada_saida)
 
@@ -159,7 +159,7 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
 
         delta_camada_oculta = get_delta_oculto(pesos, delta_saida, ativacao)
 
-        pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta) 
+        pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta, x_treinamento) 
           
         execucoes += 1
         
