@@ -157,6 +157,7 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
     execucoes = 0
     precisoes_treinamento = []
     precisoes_teste = []
+    melhores_pesos = []
 
     while execucoes < epocas:               
         ativacao = feed_foward(pesos, x_treinamento)
@@ -173,19 +174,45 @@ def treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_tr
 
         delta_camada_oculta = get_delta_oculto(pesos, delta_saida, ativacao)
 
+        melhores_pesos = pesos.copy() if precisoes_treinamento[execucoes] >= max(precisoes_treinamento) else melhores_pesos
+
         pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta, x_treinamento) 
         
         precisoes_teste.append(testar(pesos, x_teste, y_teste, funcao_ativacao, funcao_custo))
         execucoes += 1
         
-    return precisoes_treinamento, precisoes_teste
+    return precisoes_treinamento, precisoes_teste, melhores_pesos
         
+def plotar_convergencia(precisao_treinamento, precisao_teste):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 8)) # iniciar a figura
+    # plotar a figura de treinamento
+    axes[0].plot(precisao_treinamento, color = 'blue')
+    axes[0].legend(['Treinamento'])
+    # plotar a figura de teste
+    axes[1].plot(precisao_teste, color = 'orange')
+    axes[1].legend(['Teste'])
+
+    plt.xlabel('Épocas')
+    plt.ylabel('Precisão')
+    plt.show()
+
+def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
+    print('Melhor precisão de treinamento', max(precisao_treinamento))
+    print('Melhor precisão de teste', max(precisao_teste))
+    print('Melhor precisão de validação', max(resultado_final))
+    print('Média precisão de treinamento', np.mean(precisao_treinamento))
+    print('Média precisão de teste', np.mean(precisao_teste))
+    print('Média precisão de validação', np.mean(resultado_final))
+    print('Desvio Padrão precisão de treinamento', np.std(precisao_treinamento))
+    print('Desvio Padrão precisão de teste', np.std(precisao_teste))
+    print('Desvio Padrão precisão de validação', np.std(resultado_final))
+
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(3) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
 def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
-                       tx_aprendizado = 0.001, mostrar_resultados = True):
+                       tx_aprendizado = 0.001):
 
     convergencia_treinamento = [0]
     convergencia_teste = [0]
@@ -193,18 +220,28 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
     precisao_teste = []
     resultado_final = []
 
-    for i in range(30):
+    for i in range(5):
         x_treinamento, y_treinamento, x_teste, y_teste, \
         x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
         pesos = inicializar_pesos(neuronios_camada)
 
-
-        precisao = treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
+        treinamento = treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
                                      y_treinamento, x_teste, y_teste, tx_aprendizado)
 
-        print('treino', max(precisao[0]))
-        print('teste', max(precisao[1]))
+        convergencia_treinamento = treinamento[0] if max(treinamento[0]) >= \
+                                    max(convergencia_treinamento) else convergencia_treinamento
+
+        convergencia_teste = treinamento[1] if max(treinamento[1]) >= max(convergencia_teste) \
+                                        else convergencia_teste
+
+        precisao_treinamento.append(max(treinamento[0]))
+        precisao_teste.append(max(treinamento[1]))
+        resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, 
+                                      funcao_ativacao, funcao_custo))
+
+    plotar_convergencia(convergencia_treinamento, convergencia_teste)   
+    exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
 executar_mlp(funcao_sigmoid, funcao_custo, 300)
 
