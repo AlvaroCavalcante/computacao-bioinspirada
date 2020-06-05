@@ -165,6 +165,7 @@ def treinar(epocas, neuronios_camada, f_ativacao, f_custo, pesos, x_treinamento,
     precisoes_treinamento = []
     precisoes_teste = []
     melhores_pesos = []
+    melhor_matriz = []
 
     while execucoes < epocas:               
         ativacao = feed_foward(pesos, x_treinamento, f_ativacao)
@@ -186,9 +187,11 @@ def treinar(epocas, neuronios_camada, f_ativacao, f_custo, pesos, x_treinamento,
         pesos = backpropagation(pesos, ativacao, delta_saida, delta_camada_oculta, x_treinamento) 
         
         precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
+        melhor_matriz = get_matriz_confusao(classe_reshaped, resultado_camada_saida) if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz
+
         execucoes += 1
         
-    return precisoes_treinamento, precisoes_teste, melhores_pesos
+    return precisoes_treinamento, precisoes_teste, melhores_pesos, melhor_matriz
         
 def plotar_convergencia(precisao_treinamento, precisao_teste):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 8)) # iniciar a figura
@@ -226,6 +229,7 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
     precisao_treinamento = []
     precisao_teste = []
     resultado_final = []
+    matriz_confusao = []
 
     for i in range(1):
         x_treinamento, y_treinamento, x_teste, y_teste, \
@@ -242,6 +246,7 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
         convergencia_teste = treinamento[1] if max(treinamento[1]) >= max(convergencia_teste) \
                                         else convergencia_teste
 
+        matriz_confusao.append(treinamento[3])
         precisao_treinamento.append(max(treinamento[0]))
         precisao_teste.append(max(treinamento[1]))
         resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, 
@@ -249,5 +254,6 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
 
     plotar_convergencia(convergencia_treinamento, convergencia_teste)   
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
-
+    print(matriz_confusao[precisao_teste.index(max(precisao_teste))])
+    
 executar_mlp(funcao_ativacao_sigmoid, funcao_custo, 500)
