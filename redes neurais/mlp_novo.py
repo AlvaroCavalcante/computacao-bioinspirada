@@ -5,16 +5,13 @@ import math
 import matplotlib.pyplot as plt
 
 # df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CLASSE'])
-dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/breast_cancer.csv', header = 0)
-
-dataframe = dataframe.drop(columns = 'id')
-dataframe = dataframe.iloc[:, 0:31] 
+dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/diabetes.csv', header = 0)
 
 # previsores = df.iloc[:, 0:2] 
 # classe = df['CLASSE']
 
-previsores = dataframe.iloc[:, 1:31] 
-classe = dataframe['diagnosis']
+previsores = dataframe.iloc[:, 0:8] 
+classe = dataframe['Outcome']
 
 pesos0 = np.array([[-0.424, -0.740, -0.961],
                    [0.358, -0.577, -0.469]])
@@ -44,7 +41,7 @@ dict_classes = get_dicionario_classes(classe)
 def transformar_categorico_em_numerico(valor, dict_classes):
     return dict_classes[valor]
     
-classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes))
+# classe = classe.apply(lambda row: transformar_categorico_em_numerico(row, dict_classes))
 
 def somatoria(entradas, pesos):
     return np.dot(entradas, pesos)    
@@ -207,7 +204,7 @@ def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
     print('Desvio Padrão precisão de validação', np.std(resultado_final))
 
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
-neuronios_camada.append(3) #camada oculta
+neuronios_camada.append(10) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
 def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
@@ -219,11 +216,11 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
     precisao_teste = []
     resultado_final = []
 
-    for i in range(5):
+    for i in range(30):
         x_treinamento, y_treinamento, x_teste, y_teste, \
         x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
-        pesos = inicializar_pesos(neuronios_camada)
+        pesos = inicializar_pesos(neuronios_camada, [-1, 1])
 
         treinamento = treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
                                      y_treinamento, x_teste, y_teste, tx_aprendizado)
@@ -242,4 +239,4 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
     plotar_convergencia(convergencia_treinamento, convergencia_teste)   
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
 
-executar_mlp(funcao_ativacao_sigmoid, funcao_custo, 300)
+executar_mlp(funcao_ativacao_sigmoid, funcao_custo, 500)
