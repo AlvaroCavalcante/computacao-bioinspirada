@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import math
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 # df = pd.DataFrame([[0,0,0], [0,1,1], [1,0,1], [1,1,0]], columns = ['X', 'Y', 'CLASSE'])
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/diabetes.csv', header = 0)
@@ -111,6 +112,16 @@ def backpropagation(pesos, ativacao, delta_saida, delta_oculto, x_treinamento, t
             
     return pesos
 
+def get_matriz_confusao(valor_correto, valor_previsto):
+    previsao = valor_previsto.copy()
+
+    previsao[previsao >= 0.5] = 1
+    previsao[previsao < 0.5] = 0
+
+    matriz_confusao = confusion_matrix(valor_correto, previsao)
+
+    return matriz_confusao
+
 def get_precisao(valor_correto, valor_previsto):
     previsao = valor_previsto.copy()
 
@@ -216,7 +227,7 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
     precisao_teste = []
     resultado_final = []
 
-    for i in range(30):
+    for i in range(1):
         x_treinamento, y_treinamento, x_teste, y_teste, \
         x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
