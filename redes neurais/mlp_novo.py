@@ -104,16 +104,20 @@ def get_delta_oculto(pesos, delta_saida, ativacao):
     return deltas_camadas_ocultas
 
 def backpropagation(pesos, ativacao, delta_saida, delta_oculto, x_treinamento, tx_aprendizado = 0.3, momento = 1):
-    for i in range(len(pesos)): # tem coisa errada aqui 
-        if i == 0:
-            camada_transposta = np.transpose(ativacao[i])
-            delta_x_entrada = camada_transposta.dot(delta_saida)
-            
+    for i in range(len(pesos)):
+        if i == len(pesos) - 1:
+            valor_neuronio_transposto = np.transpose(x_treinamento.values)
+            delta_x_entrada = valor_neuronio_transposto.dot(delta_oculto[0])
             pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada)
+        elif i == 0:
+            valor_neuronio_transposto = np.transpose(ativacao[len(ativacao) - (i + 1)])
+            delta_x_entrada = valor_neuronio_transposto.dot(delta_saida)
+            pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada) 
         else:
-            camada_transposta = np.transpose(x_treinamento)
-            pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * camada_transposta.dot(delta_oculto[0])).values
-            
+            valor_neuronio_transposto = np.transpose(ativacao[len(ativacao) - (i + 1)])
+            delta_x_entrada = valor_neuronio_transposto.dot(delta_oculto[len(delta_oculto) - i])
+            pesos[len(pesos) - (1 + i)] = (pesos[len(pesos) - (1 + i)] * momento) + (tx_aprendizado * delta_x_entrada)
+
     return pesos
 
 def get_matriz_confusao(valor_correto, valor_previsto):
