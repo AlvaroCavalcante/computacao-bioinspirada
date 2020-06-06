@@ -94,13 +94,17 @@ def get_delta_oculto(pesos, delta_saida, ativacao):
     deltas_camadas_ocultas = []  # pegar a derivada da saída
 
     for i in range(len(pesos) -1):
-        derivada = calcular_derivada_parcial(ativacao[len(ativacao) - (i + 2)]) # pegar de trás para frente a derivada de cada neurônio
-        deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[len(pesos) - (i + 1)], delta_saida, derivada))
+        if i == 0:
+            derivada = calcular_derivada_parcial(ativacao[len(ativacao) - (i + 2)]) # pegar de trás para frente a derivada de cada neurônio
+            deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[len(pesos) - (i + 1)], delta_saida, derivada))
+        else:
+            derivada = calcular_derivada_parcial(ativacao[len(ativacao) - (i + 2)]) # pegar de trás para frente a derivada de cada neurônio
+            deltas_camadas_ocultas.append(calcular_delta_oculto(pesos[len(pesos) - (i + 1)], deltas_camadas_ocultas[i - 1], derivada))
 
     return deltas_camadas_ocultas
 
 def backpropagation(pesos, ativacao, delta_saida, delta_oculto, x_treinamento, tx_aprendizado = 0.3, momento = 1):
-    for i in range(len(pesos)):
+    for i in range(len(pesos)): # tem coisa errada aqui 
         if i == 0:
             camada_transposta = np.transpose(ativacao[i])
             delta_x_entrada = camada_transposta.dot(delta_saida)
@@ -219,9 +223,10 @@ def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
 
 neuronios_camada = [len(previsores.columns)] # adicionado neurônios da camada de entrada
 neuronios_camada.append(10) #camada oculta
+neuronios_camada.append(10) #camada oculta
 neuronios_camada.append(1) #neurônio de saída.
 
-def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1], 
+def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [-1, 1], 
                        tx_aprendizado = 0.001):
 
     convergencia_treinamento = [0]
@@ -235,7 +240,7 @@ def executar_mlp(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [0, 1],
         x_treinamento, y_treinamento, x_teste, y_teste, \
         x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
-        pesos = inicializar_pesos(neuronios_camada, [-1, 1])
+        pesos = inicializar_pesos(neuronios_camada, dominio_pesos)
 
         treinamento = treinar(epocas, neuronios_camada, funcao_ativacao, funcao_custo, pesos, x_treinamento,
                                      y_treinamento, x_teste, y_teste, tx_aprendizado)
