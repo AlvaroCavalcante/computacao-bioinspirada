@@ -3,19 +3,20 @@ import numpy as np
 import pandas as pd
 import math 
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
-# dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
+dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 # dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/wine.csv', header = 0)
 
-dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/breast cancer.csv', header = 0)
+# dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/breast cancer.csv', header = 0)
 
-dataframe = dataframe.drop(columns = ['id', 'Unnamed: 32'])
+# dataframe = dataframe.drop(columns = ['id', 'Unnamed: 32'])
 
-previsores = dataframe.iloc[:, 1:32] 
-classe = dataframe['diagnosis']
+# previsores = dataframe.iloc[:, 1:32] 
+# classe = dataframe['diagnosis']
 
-# previsores = dataframe.iloc[:, 0:4] 
-# classe = dataframe['class']
+previsores = dataframe.iloc[:, 0:4] 
+classe = dataframe['class']
 
 # previsores = dataframe.iloc[:, 1:14] 
 # classe = dataframe['Wine']
@@ -70,7 +71,7 @@ classe_nova = []
 for i in classe:
     classe_nova.append(classe_codificada[i])
     
-classe_nova = np.array(classe_nova).reshape(len(classe), 2)
+classe_nova = np.array(classe_nova).reshape(len(classe), 3)
 
 def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
     x_treinamento = previsores.sample(frac = p_treinamento)
@@ -151,6 +152,17 @@ def atualizar_peso(entrada, peso, erro, tx_aprendizado):
     novo_peso = peso + np.mean((tx_aprendizado * entrada * erro))
     return novo_peso
 
+def get_matriz_confusao(valor_correto, valor_previsto):
+    previsao = valor_previsto.copy()
+    previsao = np.where(previsao == 1)[1]
+    
+    correto = valor_correto.copy()
+    correto = np.where(correto == 1)[1]
+
+    matriz_confusao = confusion_matrix(correto, previsao)
+
+    return matriz_confusao
+
 def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     entradas = x_previsores.values  
     soma = somatoria(entradas, pesos)
@@ -167,6 +179,7 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
     precisoes_treinamento = []
     precisoes_teste = []
     melhores_pesos = []
+    melhor_matriz = []
 
     while execucoes < epocas:
 
@@ -191,6 +204,8 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
             count += 1
         
         precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
+        melhor_matriz = get_matriz_confusao(y_treinamento, neuronio_excitado) if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz
+
         execucoes += 1
     
     return precisoes_treinamento, precisoes_teste, melhores_pesos
