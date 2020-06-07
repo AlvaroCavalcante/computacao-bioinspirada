@@ -158,8 +158,8 @@ def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
     print('Desvio Padrão precisão de validação', np.std(resultado_final))
 
 def get_matriz_confusao(valor_correto, valor_previsto):
-    previsao = np.array(valor_previsto.copy())
-    previsao = np.where(previsao == 1)[1]
+    previsao = np.array(valor_previsto.copy()) # deep copy da variável
+    previsao = np.where(previsao == 1)[1] # transformando em um array de valores escalares
     
     correto = np.array(list(valor_correto.values))
     correto = np.where(correto == 1)[1]
@@ -202,7 +202,6 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
     while execucoes < epocas:
         precisao = 0
         iteracao = 0
-
         valores_previstos = []
 
         for i in x_treinamento.values:
@@ -234,12 +233,12 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
         precisoes_treinamento.append(precisao)
         melhor_matriz_treinamento = get_matriz_confusao(y_treinamento, valores_previstos) if precisoes_treinamento[execucoes] >= max(precisoes_treinamento) else melhor_matriz_treinamento
 
-        teste = testar(pesos, x_teste, y_teste, f_ativacao, f_custo)
-        precisoes_teste.append(teste[0])
-        melhor_matriz_teste = teste[1] if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz_teste
+        teste_rede = testar(pesos, x_teste, y_teste, f_ativacao, f_custo)
+        precisoes_teste.append(teste_rede[0])
+        melhor_matriz_teste = teste_rede[1] if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz_teste
 
         execucoes += 1
-    return precisoes_treinamento, precisoes_teste, pesos
+    return precisoes_treinamento, precisoes_teste, pesos, melhor_matriz_treinamento, melhor_matriz_teste
 
 previsores['bias'] = 1
 
@@ -249,7 +248,11 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     precisao_teste = [0]
     resultado_final = []
 
-    for i in range(30):
+    matriz_confusao_treinamento = []
+    matriz_confusao_teste = []
+    matriz_confusao_validacao = []
+
+    for i in range(1):
         pesos = inicializar_pesos(dominio_pesos) # Alterando os pesos em cada inicialização
         x_treinamento, y_treinamento, x_teste, y_teste, x_validacao, y_validacao = dividir_dataframe(previsores, classe, 0.7, 0.15, 0.15)
 
@@ -260,9 +263,15 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         precisao_teste = treinamento[1] if max(treinamento[1]) >= max(precisao_teste) else precisao_teste
 
         resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
+        
+        matriz_confusao_treinamento = treinamento[4] if max(treinamento[0]) >= max(precisao_treinamento) else matriz_confusao_treinamento
+        matriz_confusao_teste = treinamento[4] if max(treinamento[1]) >= max(precisao_teste) else matriz_confusao_teste
 
     plotar_convergencia(treinamento[0], treinamento[1])
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
+    print('Matriz de confusão de treinamento:\n', matriz_confusao_treinamento)
+    print('Matriz de confusão de treinamento:\n', matriz_confusao_teste)
+
 
 executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 
