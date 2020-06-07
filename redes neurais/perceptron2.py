@@ -4,11 +4,18 @@ import pandas as pd
 import math 
 import matplotlib.pyplot as plt
 
-dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
+# dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 # dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/wine.csv', header = 0)
 
-previsores = dataframe.iloc[:, 0:4] 
-classe = dataframe['class']
+dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/breast cancer.csv', header = 0)
+
+dataframe = dataframe.drop(columns = ['id', 'Unnamed: 32'])
+
+previsores = dataframe.iloc[:, 1:32] 
+classe = dataframe['diagnosis']
+
+# previsores = dataframe.iloc[:, 0:4] 
+# classe = dataframe['class']
 
 # previsores = dataframe.iloc[:, 1:14] 
 # classe = dataframe['Wine']
@@ -63,7 +70,7 @@ classe_nova = []
 for i in classe:
     classe_nova.append(classe_codificada[i])
     
-classe_nova = np.array(classe_nova).reshape(len(classe), 3)
+classe_nova = np.array(classe_nova).reshape(len(classe), 2)
 
 def dividir_dataframe(previsores, classe, p_treinamento, p_teste, p_validacao):
     x_treinamento = previsores.sample(frac = p_treinamento)
@@ -244,7 +251,7 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
     return max(precisao_treinamento), max(precisao_teste), max(resultado_final)
 
 
-# executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
+executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
 
 def buscar_parametros(lista_parametros):
                     import itertools
@@ -275,6 +282,6 @@ lista_parametros = { 'custo' : [funcao_custo, funcao_custo_mse],
                       'pesos': [0.5, 0.05, 0.005, 0.0005]
 }
 
-teste_parametrico = buscar_parametros(lista_parametros)
+# teste_parametrico = buscar_parametros(lista_parametros)
 
-print(teste_parametrico)
+# print(teste_parametrico)
