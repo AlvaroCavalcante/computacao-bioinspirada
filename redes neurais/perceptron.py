@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import math 
 import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/iris2.csv', header = 0)
 # dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/redes neurais/datasets/wine.csv', header = 0)
@@ -156,42 +157,62 @@ def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
     print('Desvio Padrão precisão de teste', np.std(precisao_teste))
     print('Desvio Padrão precisão de validação', np.std(resultado_final))
 
+def get_matriz_confusao(valor_correto, valor_previsto):
+    previsao = np.array(valor_previsto.copy())
+    previsao = np.where(previsao == 1)[1]
+    
+    correto = np.array(list(valor_correto.values))
+    correto = np.where(correto == 1)[1]
+
+    matriz_confusao = confusion_matrix(correto, previsao)
+
+    return matriz_confusao
+
 def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     precisao = 0
     iteracao = 0
+    valores_previstos = []
+    
     for i in x_previsores.values:
         entradas = i   
         soma = somatoria(entradas, pesos)
         
         neuronio_excitado, valor_ativacao = f_ativacao(soma)
-        
+        valores_previstos.append(neuronio_excitado)
+
         erro, valor_erro = f_custo(y_classe[iteracao], neuronio_excitado, valor_ativacao)
 
         if erro == 0:
             precisao += 100 / len(x_previsores)
         
         iteracao += 1
-    
-    return precisao
+
+    matriz_confusao = get_matriz_confusao(y_classe, valores_previstos)
+
+    return precisao, matriz_confusao
 
 def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_teste, y_teste,
             tx_aprendizado):
     execucoes = 0
     precisoes_treinamento = [0]
     precisoes_teste = [0]
+    melhor_matriz_treinamento = []
+    melhor_matriz_teste = []
 
     while execucoes < epocas:
         precisao = 0
         iteracao = 0
 
-        # x_treinamento = x_treinamento.sample(frac=1).reset_index(drop=True) # embaralhar os valores dos previsores, por que sem isso, podemos ter sempre uma ordem fixa de ajuste de pesos, prejudicando a rede
+        valores_previstos = []
 
         for i in x_treinamento.values:
             entradas = i   
             soma = somatoria(entradas, pesos)
         
             neuronio_excitado, valor_ativacao = f_ativacao(soma)
-        
+
+            valores_previstos.append(neuronio_excitado)
+            
             erro, valor_erro = f_custo(y_treinamento[iteracao], neuronio_excitado, valor_ativacao)
 
             if erro == True:
@@ -211,8 +232,12 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento, x_
             iteracao += 1
         
         precisoes_treinamento.append(precisao)
-        
-        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
+        melhor_matriz_treinamento = get_matriz_confusao(y_treinamento, valores_previstos) if precisoes_treinamento[execucoes] >= max(precisoes_treinamento) else melhor_matriz_treinamento
+
+        teste = testar(pesos, x_teste, y_teste, f_ativacao, f_custo)
+        precisoes_teste.append(teste[0])
+        melhor_matriz_teste = teste[1] if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz_teste
+
         execucoes += 1
     return precisoes_treinamento, precisoes_teste, pesos
 

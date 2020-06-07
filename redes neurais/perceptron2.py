@@ -170,8 +170,10 @@ def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     neuronio_excitado, valor_ativacao = f_ativacao(soma)
     
     erro, acertos, valor_erro = f_custo(y_classe, neuronio_excitado, valor_ativacao)
-       
-    return acertos / len(x_previsores)
+    
+    matriz_confusao = get_matriz_confusao(y_classe, neuronio_excitado)
+
+    return acertos / len(x_previsores), matriz_confusao
 
 def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
                                      x_teste, y_teste, tx_aprendizado):
@@ -179,7 +181,8 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
     precisoes_treinamento = []
     precisoes_teste = []
     melhores_pesos = []
-    melhor_matriz = []
+    melhor_matriz_treinamento = []
+    melhor_matriz_teste = []
 
     while execucoes < epocas:
 
@@ -203,8 +206,10 @@ def treinar(epocas, f_ativacao, f_custo, pesos, x_treinamento, y_treinamento,
             pesos[count] = novo_peso
             count += 1
         
-        precisoes_teste.append(testar(pesos, x_teste, y_teste, f_ativacao, f_custo))
-        melhor_matriz = get_matriz_confusao(y_treinamento, neuronio_excitado) if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz
+        teste = testar(pesos, x_teste, y_teste, f_ativacao, f_custo)
+        precisoes_teste.append(teste[0])
+        melhor_matriz_treinamento = get_matriz_confusao(y_treinamento, neuronio_excitado) if precisoes_treinamento[execucoes] >= max(precisoes_treinamento) else melhor_matriz_treinamento
+        melhor_matriz_teste = teste[1] if precisoes_teste[execucoes] >= max(precisoes_teste) else melhor_matriz_teste
 
         execucoes += 1
     
