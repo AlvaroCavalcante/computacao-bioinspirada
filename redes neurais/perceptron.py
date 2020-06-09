@@ -102,7 +102,7 @@ def funcao_ativacao_step(soma):
         else:
             ativacao.append(0)
 
-    return ativacao
+    return ativacao, ativacao
 
 def funcao_ativacao_sigmoid(soma):
     valor_ativacao = list(1 / (1 + math.e ** -soma))
@@ -158,15 +158,18 @@ def exibir_resultados(precisao_treinamento, precisao_teste, resultado_final):
     print('Desvio Padrão precisão de validação', np.std(resultado_final))
 
 def get_matriz_confusao(valor_correto, valor_previsto):
-    previsao = np.array(valor_previsto.copy()) # deep copy da variável
-    previsao = np.where(previsao == 1)[1] # transformando em um array de valores escalares
+    try:
+        previsao = np.array(valor_previsto.copy()) # deep copy da variável
+        previsao = np.where(previsao == 1)[1] # transformando em um array de valores escalares
+        
+        correto = np.array(list(valor_correto.values))
+        correto = np.where(correto == 1)[1]
     
-    correto = np.array(list(valor_correto.values))
-    correto = np.where(correto == 1)[1]
-
-    matriz_confusao = confusion_matrix(correto, previsao)
-
-    return matriz_confusao
+        matriz_confusao = confusion_matrix(correto, previsao)
+    
+        return matriz_confusao
+    except: 
+        return []
 
 def testar(pesos, x_previsores, y_classe, f_ativacao, f_custo):
     precisao = 0
@@ -262,16 +265,20 @@ def executar_perceptron(funcao_ativacao, funcao_custo, epocas, dominio_pesos = [
         precisao_treinamento = treinamento[0] if max(treinamento[0]) >= max(precisao_treinamento) else precisao_treinamento
         precisao_teste = treinamento[1] if max(treinamento[1]) >= max(precisao_teste) else precisao_teste
 
-        resultado_final.append(testar(treinamento[2], x_validacao, y_validacao, funcao_ativacao, funcao_custo))
-        
-        matriz_confusao_treinamento = treinamento[4] if max(treinamento[0]) >= max(precisao_treinamento) else matriz_confusao_treinamento
+        teste_final = testar(treinamento[2], x_validacao, y_validacao, 
+                                      funcao_ativacao, funcao_custo)
+        resultado_final.append(teste_final[0])
+
+        matriz_confusao_treinamento = treinamento[3] if max(treinamento[0]) >= max(precisao_treinamento) else matriz_confusao_treinamento
         matriz_confusao_teste = treinamento[4] if max(treinamento[1]) >= max(precisao_teste) else matriz_confusao_teste
+        matriz_confusao_validacao = teste_final[1] if teste_final[0] >= max(resultado_final) else matriz_confusao_validacao
 
     plotar_convergencia(treinamento[0], treinamento[1])
     exibir_resultados(precisao_treinamento, precisao_teste, resultado_final)
     print('Matriz de confusão de treinamento:\n', matriz_confusao_treinamento)
-    print('Matriz de confusão de treinamento:\n', matriz_confusao_teste)
+    print('Matriz de confusão de teste:\n', matriz_confusao_teste)
+    print('Matriz de confusão de validação:\n', matriz_confusao_validacao)
 
 
-executar_perceptron(funcao_ativacao_sigmoid, funcao_custo_mse, 400, [-0.005, 0.005])
+executar_perceptron(funcao_ativacao_step, funcao_custo_mse, 400, [-0.005, 0.005])
 
