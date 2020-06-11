@@ -104,6 +104,10 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
         enxame = atualizar_posicao(enxame, velocidade)
 
         execucao += 1
-    return enxame
+    
+    melhor_p_particula, aptidao, melhor_aptidao = get_melhor_posicao(enxame_anterior, enxame, aptidao)            
+    return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))]
 
-pso(5, [(-7 ,7)], [-2, 2])
+melhor_aptidao, melhor_p = pso(5, [(-7 ,7)], [-2, 2])
+
+print(melhor_aptidao, melhor_p)
