@@ -26,8 +26,8 @@ def atualizar_velocidade(v_atual, p_atual, melhor_p_particula, aptidao,
       
     v_nova = []
     count = 0
-    al1 = [1.6, 0.3, 1.3, 0.6] # [2, 1.6, 0.9, 1.6]
-    al2 = [1.8, 1.9, 0.2, 1.1] # [1, 0.3, 1.9, 2]
+    al1 = [1.6, 0.3, 1.3, 0.6] # [2, 1.6, 0.9, 1.6] # [1.3, 1.7, 1.4, 1.5]
+    al2 = [1.8, 1.9, 0.2, 1.1] # [1, 0.3, 1.9, 2] # [0.1, 1.9, 1.6, 0.8]
 
     for velocidade in v_atual:
         # v_aleatorio1 = [random.uniform(0, ac1) for i in range(len(dominio_particulas))] # baseado nas dimensões do problema
@@ -41,9 +41,9 @@ def atualizar_velocidade(v_atual, p_atual, melhor_p_particula, aptidao,
 
         melhor_p_vizinho = melhor_p_particula[melhor_p_vizinho]
 
-        inteligencia_cognitiva = velocidade + (v_aleatorio1 * (np.array(melhor_p_particula[count]) - np.array(p_atual[count]))) 
+        inteligencia_cognitiva = velocidade + (np.dot(v_aleatorio1, np.array(melhor_p_particula[count]) - np.array(p_atual[count]))) 
 
-        inteligencia_social = v_aleatorio2 * (np.array(melhor_p_vizinho) - np.array(p_atual[count]))
+        inteligencia_social = np.dot(v_aleatorio2, np.array(melhor_p_vizinho) - np.array(p_atual[count]))
         
         velocidade_atualizada = inteligencia_cognitiva + inteligencia_social
 
@@ -74,7 +74,7 @@ def get_melhor_posicao(enxame_anterior, enxame, aptidao_anterior):
 
     for i in aptidao_anterior:
         melhor_posicao.append(enxame[count] if nova_aptidao[count] < aptidao_anterior[count] else enxame_anterior[count])
-        melhor_aptidao.append(nova_aptidao[count] if nova_aptidao[count] > aptidao_anterior[count] else aptidao_anterior[count])
+        melhor_aptidao.append(nova_aptidao[count] if nova_aptidao[count] < aptidao_anterior[count] else aptidao_anterior[count])
         count +=1
 
     return melhor_posicao, nova_aptidao, melhor_aptidao
