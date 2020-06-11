@@ -1,4 +1,5 @@
 import random
+import numpy as np
 
 def funcao_aptidao(x, y):
     return (1 - x)**2 + 100*(y-x**2)**2
@@ -23,8 +24,8 @@ def get_velocidade(n_particulas, dominio):
 def atualizar_velocidade(v_atual, p_atual, melhor_p, aptidao, 
                          dominio_v, ac1 = 2.05, ac2 = 2.05):
     
-    v_aleatorio1 = random.uniform(0, ac1)
-    v_aleatorio2 = random.uniform(0, ac2)
+    v_aleatorio1 = [random.uniform(0, ac1) for i in range(len(p_atual[0]))] # baseado nas dimensões do problema
+    v_aleatorio2 = [random.uniform(0, ac2) for i in range(len(p_atual[0]))]
     
     v_nova = []
 
@@ -33,8 +34,11 @@ def atualizar_velocidade(v_atual, p_atual, melhor_p, aptidao,
         melhor_p_vizinho = aptidao.index(min([aptidao[count - 1]] + [aptidao[ count + 1]]))
         melhor_p_vizinho = p_atual[melhor_p_vizinho]
 
-        v_nova.append(
-            velocidade+v_aleatorio1*(melhor_p-p_atual[count])+v_aleatorio2*(melhor_p_vizinho-p_atual[count]))
+        inteligencia_cognitiva = velocidade + np.dot(v_aleatorio1, (np.array(melhor_p) - np.array(p_atual[count])))
+
+        inteligencia_social = np.dot(v_aleatorio2, (np.array(melhor_p_vizinho) - np.array(p_atual[count])))
+        
+        v_nova.append(inteligencia_cognitiva + inteligencia_social)
         
         count += 1 
 
@@ -51,6 +55,7 @@ def atualizar_posicao(p_atual, nova_velocidade):
 def pso(n_particulas, dominio_particulas, dominio_velocidade):
     enxame = get_enxame(n_particulas, dominio_particulas)
     velocidade = get_velocidade(n_particulas, dominio_velocidade)
+
     melhor_p = enxame
     execucao = 0
 
