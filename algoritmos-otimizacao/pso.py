@@ -1,5 +1,6 @@
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 def funcao_aptidao(x, y):
     return (1 - x)**2 + 100*(y-x**2)**2
@@ -71,6 +72,16 @@ def get_melhor_posicao(enxame_anterior, enxame, aptidao_anterior):
 
     return melhor_posicao, nova_aptidao, melhor_aptidao
 
+def exibir_grafico_convergencia(convergencia):
+    matriz_convergencia = np.asmatrix(convergencia)
+    matriz_convergencia = matriz_convergencia.reshape(-3, 499)
+    
+    for i in matriz_convergencia:
+        vetor = i.reshape(-1, 1)
+        plt.plot(vetor)
+    
+    plt.show()
+
 def pso(n_particulas, dominio_particulas, dominio_velocidade):
     enxame = get_enxame(n_particulas, dominio_particulas)
     velocidade = get_velocidade(n_particulas, dominio_velocidade)
@@ -78,8 +89,9 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
     melhor_p_particula = enxame
     enxame_anterior = []
     execucao = 0
+    aptidoes = []
 
-    while execucao < 1000:
+    while execucao < 500:
         
         if len(enxame_anterior) == 0:
             aptidao = [funcao_aptidao(x, y) for x, y in enxame]
@@ -89,15 +101,19 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
             melhor_p_particula, aptidao, melhor_aptidao = get_melhor_posicao(enxame_anterior, enxame, aptidao)            
             velocidade = atualizar_velocidade(velocidade, enxame, melhor_p_particula,
                                         melhor_aptidao, dominio_velocidade, dominio_particulas)
-         
+        
+            aptidoes.append(melhor_aptidao)
+
         enxame_anterior = enxame.copy()
         enxame = atualizar_posicao(enxame, velocidade)
-
+        
         execucao += 1
     
     melhor_p_particula, aptidao, melhor_aptidao = get_melhor_posicao(enxame_anterior, enxame, aptidao)            
-    return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))]
+    return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))], aptidoes
 
-melhor_aptidao, melhor_p = pso(400, [(-5, 5), (-5, 5)], [-0.5, 0.5])
+melhor_aptidao, melhor_p, aptidoes = pso(40, [(-5, 5), (-5, 5)], [-0.5, 0.5])
+
+exibir_grafico_convergencia(aptidoes)
 
 print(melhor_aptidao, melhor_p)
