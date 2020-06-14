@@ -72,7 +72,7 @@ def get_melhor_posicao(enxame_anterior, enxame, aptidao_anterior):
 
     return melhor_posicao, nova_aptidao, melhor_aptidao
 
-def exibir_grafico_convergencia(convergencia):
+def exibir_convergencia_total(convergencia):
     matriz_convergencia = np.asmatrix(convergencia)
     matriz_convergencia = matriz_convergencia.reshape(-3, 499)
     
@@ -80,6 +80,19 @@ def exibir_grafico_convergencia(convergencia):
         vetor = i.reshape(-1, 1)
         plt.plot(vetor)
     
+    plt.show()
+
+def exibir_convergencia_minima_media(melhores_aptidoes, aptidao_media):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 8)) # iniciar a figura
+    # plotar a figura de treinamento
+    axes[0].plot(melhores_aptidoes, color = 'blue')
+    axes[0].legend(['Melhor aptidão ao longo das iterações'])
+    # plotar a figura de teste
+    axes[1].plot(aptidao_media, color = 'orange')
+    axes[1].legend(['Média de aptidão ao longo das iterações'])
+
+    plt.xlabel('Execuções')
+    plt.ylabel('Aptidão')
     plt.show()
 
 def pso(n_particulas, dominio_particulas, dominio_velocidade):
@@ -90,6 +103,8 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
     enxame_anterior = []
     execucao = 0
     aptidoes = []
+    melhores_aptidoes = []
+    aptidao_media = []
 
     while execucao < 500:
         
@@ -103,6 +118,9 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
                                         melhor_aptidao, dominio_velocidade, dominio_particulas)
         
             aptidoes.append(melhor_aptidao)
+            melhores_aptidoes.append(min(melhor_aptidao))
+            aptidao_media.append(sum(melhores_aptidoes) / len(melhores_aptidoes))
+
 
         enxame_anterior = enxame.copy()
         enxame = atualizar_posicao(enxame, velocidade)
@@ -110,10 +128,13 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
         execucao += 1
     
     melhor_p_particula, aptidao, melhor_aptidao = get_melhor_posicao(enxame_anterior, enxame, aptidao)            
-    return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))], aptidoes
 
-melhor_aptidao, melhor_p, aptidoes = pso(40, [(-5, 5), (-5, 5)], [-0.5, 0.5])
+    return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))], aptidoes, \
+    melhores_aptidoes, aptidao_media
 
-exibir_grafico_convergencia(aptidoes)
+melhor_aptidao, melhor_p, aptidoes, melhores_aptidoes, aptidao_media = pso(5, [(-5, 5), (-5, 5)], [-0.5, 0.5])
+
+exibir_convergencia_total(aptidoes)
+exibir_convergencia_minima_media(melhores_aptidoes, aptidao_media)
 
 print(melhor_aptidao, melhor_p)
