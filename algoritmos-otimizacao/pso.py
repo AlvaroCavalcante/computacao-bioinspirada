@@ -53,7 +53,7 @@ def atualizar_velocidade(v_atual, p_atual, melhor_p_particula, aptidao,
     return v_nova
 
 def atualizar_posicao(p_atual, velocidade):
-    velocidade = np.stack(( np.array(velocidade), np.array(velocidade)), axis=1) 
+    velocidade = np.stack((np.array(velocidade), np.array(velocidade)), axis=1) 
     nova_p = np.array(p_atual) + np.array(velocidade)
     
     return nova_p
@@ -74,7 +74,7 @@ def get_melhor_posicao(enxame_anterior, enxame, aptidao_anterior):
 
 def exibir_convergencia_total(convergencia):
     matriz_convergencia = np.asmatrix(convergencia)
-    matriz_convergencia = matriz_convergencia.reshape(-3, 499)
+    matriz_convergencia = np.transpose(matriz_convergencia) 
     
     for i in matriz_convergencia:
         vetor = i.reshape(-1, 1)
@@ -95,7 +95,7 @@ def exibir_convergencia_minima_media(melhores_aptidoes, aptidao_media):
     plt.ylabel('Aptidão')
     plt.show()
 
-def pso(n_particulas, dominio_particulas, dominio_velocidade):
+def pso(n_particulas, dominio_particulas, dominio_velocidade, execucoes = 30):
     enxame = get_enxame(n_particulas, dominio_particulas)
     velocidade = get_velocidade(n_particulas, dominio_velocidade)
 
@@ -106,7 +106,7 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
     melhores_aptidoes = []
     aptidao_media = []
 
-    while execucao < 500:
+    while execucao < execucoes:
         
         if len(enxame_anterior) == 0:
             aptidao = [funcao_aptidao(x, y) for x, y in enxame]
@@ -132,7 +132,7 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade):
     return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))], aptidoes, \
     melhores_aptidoes, aptidao_media
 
-melhor_aptidao, melhor_p, aptidoes, melhores_aptidoes, aptidao_media = pso(5, [(-5, 5), (-5, 5)], [-0.5, 0.5])
+melhor_aptidao, melhor_p, aptidoes, melhores_aptidoes, aptidao_media = pso(3, [(-5, 5), (-5, 5)], [-0.5, 0.5])
 
 exibir_convergencia_total(aptidoes)
 exibir_convergencia_minima_media(melhores_aptidoes, aptidao_media)
