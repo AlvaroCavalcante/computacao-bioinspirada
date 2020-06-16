@@ -132,15 +132,26 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade, execucoes = 30):
     return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))], aptidoes, \
     melhores_aptidoes, aptidao_media
 
-aptidao_final = 99999
-posicao_final = []
-melhor_aptidao_final = []
-melhor_aptidao_media = []
-aptidoes_finais = []
+def executar_pso(n_particulas, dominio_particulas, dominio_velocidade, execucoes):
+    aptidao_final = 99999
+    posicao_final = []
+    melhor_aptidao_final = []
+    melhor_aptidao_media = []
+    aptidoes_finais = []
 
-melhor_aptidao, melhor_p, aptidoes, melhores_aptidoes, aptidao_media = pso(3, [(-5, 5), (-5, 5)], [-0.5, 0.5])
+    for i in range(30):
+        melhor_aptidao, melhor_p, aptidoes, melhores_aptidoes, \
+        aptidao_media = pso(n_particulas, dominio_particulas, dominio_velocidade, execucoes)
 
-exibir_convergencia_total(aptidoes)
-exibir_convergencia_minima_media(melhores_aptidoes, aptidao_media)
+        aptidao_final = melhor_aptidao if melhor_aptidao <= aptidao_final else aptidao_final
+        posicao_final = melhor_p if melhor_aptidao <= aptidao_final else posicao_final
+        melhor_aptidao_final = melhores_aptidoes if melhor_aptidao <= aptidao_final else melhores_aptidoes
+        melhor_aptidao_media = aptidao_media if melhor_aptidao <= aptidao_final else melhor_aptidao_media 
+        aptidoes_finais = aptidoes if melhor_aptidao <= aptidao_final else aptidoes 
 
-print(melhor_aptidao, melhor_p)
+    exibir_convergencia_total(aptidoes_finais)
+    exibir_convergencia_minima_media(melhor_aptidao_final, melhor_aptidao_media)
+    print('Melhor aptidão', aptidao_final)
+    print('Melhor posição encontrada', posicao_final)
+
+executar_pso(3, [(-5, 5), (-5, 5)], [-2, 2], 30)
