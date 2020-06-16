@@ -145,7 +145,7 @@ def executar_pso(n_particulas, dominio_particulas, dominio_velocidade, execucoes
 
         aptidao_final = melhor_aptidao if melhor_aptidao <= aptidao_final else aptidao_final
         posicao_final = melhor_p if melhor_aptidao <= aptidao_final else posicao_final
-        melhor_aptidao_final = melhores_aptidoes if melhor_aptidao <= aptidao_final else melhores_aptidoes
+        melhor_aptidao_final = melhores_aptidoes if melhor_aptidao <= aptidao_final else melhor_aptidao_final
         melhor_aptidao_media = aptidao_media if melhor_aptidao <= aptidao_final else melhor_aptidao_media 
         aptidoes_finais = aptidoes if melhor_aptidao <= aptidao_final else aptidoes 
 
