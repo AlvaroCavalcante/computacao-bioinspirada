@@ -132,6 +132,12 @@ def pso(n_particulas, dominio_particulas, dominio_velocidade, execucoes = 30):
     return min(melhor_aptidao), melhor_p_particula[melhor_aptidao.index(min(melhor_aptidao))], aptidoes, \
     melhores_aptidoes, aptidao_media
 
+aptidao_final = 99999
+posicao_final = []
+melhor_aptidao_final = []
+melhor_aptidao_media = []
+aptidoes_finais = []
+
 melhor_aptidao, melhor_p, aptidoes, melhores_aptidoes, aptidao_media = pso(3, [(-5, 5), (-5, 5)], [-0.5, 0.5])
 
 exibir_convergencia_total(aptidoes)
