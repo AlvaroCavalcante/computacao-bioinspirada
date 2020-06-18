@@ -68,7 +68,6 @@ def convolution(image, kernel, stride, padding):
     return np.asmatrix(new_image)
 
 def max_pooling(image, stride, padding):
-    # new_poll_image = np.zeros(shape=(image.shape[0], image.shape[1]))
     new_poll_image = []
 
     initial_line = 0
@@ -82,7 +81,6 @@ def max_pooling(image, stride, padding):
         for i in range((image.shape[1] // stride) - stride):
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                                     
-            # new_poll_image[initial_line, final_column - stride] = np.max(kernel_area)
             matrix_line.append(np.max(kernel_area))
             initial_column += stride
             final_column += stride
