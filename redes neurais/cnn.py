@@ -20,16 +20,16 @@ padding = 1
 
 new_image = np.zeros(shape=(399, 300))
 
-linha_inicial = 0
-linha_final = 3
+initial_line = 0
+final_line = 3
 
 while position < image.shape[0]:    
     try:
-        coluna_inicial = 0
-        coluna_final = 3
+        initial_column = 0
+        final_column = 3
         
         for i in range(image.shape[1]):
-            kernel_area = image[linha_inicial:linha_final, coluna_inicial:coluna_final]
+            kernel_area = image[initial_line:final_line, initial_column:final_column]
                         
             if kernel_area.shape != kernel.shape:
                 kernel_area = np.vstack([kernel_area, np.asmatrix([[0,0,0]])]) if kernel_area.shape[0] != kernel.shape[0] else kernel_area  
@@ -37,13 +37,13 @@ while position < image.shape[0]:
     
             kernel_result = np.dot(kernel, kernel_area)
             
-            new_image[linha_inicial, coluna_inicial] = np.sum(kernel_result)
+            new_image[initial_line, initial_column] = np.sum(kernel_result)
         
-            coluna_inicial += padding
-            coluna_final += padding
+            initial_column += padding
+            final_column += padding
         
-        linha_final += stride
-        linha_inicial += stride  
+        final_line += stride
+        initial_line += stride  
     except:
         break
 
@@ -52,4 +52,4 @@ while position < image.shape[0]:
 imgplot = plt.imshow(new_image, cmap='gray', vmin=0, vmax=255)
 plt.show()
 
-# img = Image.fromarray(new_image)
+new_image
