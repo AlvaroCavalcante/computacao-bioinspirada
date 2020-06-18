@@ -45,31 +45,35 @@ def convolution(kernel, stride, padding):
 
 conv_image = convolution(kernel_sharpen, 1, 1)
 
-# imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
-# plt.show()
+imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
+plt.show()
 
 def max_pooling(image, stride, padding):
-    new_poll_image = np.zeros(shape=(image.shape[0], image.shape[1]))
+    # new_poll_image = np.zeros(shape=(image.shape[0], image.shape[1]))
+    new_poll_image = []
 
     initial_line = 0
     final_line = 2
-
+    
     while final_line <= image.shape[0]:    
         initial_column = 0
         final_column = 2
+        matrix_line = []
         
         for i in range((image.shape[1] // stride) - stride):
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                                     
-            new_poll_image[initial_line, final_column - stride] = np.max(kernel_area)
-        
+            # new_poll_image[initial_line, final_column - stride] = np.max(kernel_area)
+            matrix_line.append(np.max(kernel_area))
             initial_column += stride
             final_column += stride
+        
+        new_poll_image.append(matrix_line)
         
         final_line += padding
         initial_line += padding  
 
-    return new_poll_image
+    return np.asmatrix(new_poll_image)
 
 poll_image = max_pooling(conv_image, 2, 2)
 
