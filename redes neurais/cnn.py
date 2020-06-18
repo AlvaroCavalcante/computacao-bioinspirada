@@ -18,12 +18,13 @@ kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
 def convolution(kernel, stride, padding):
     initial_line = 0
     final_line = kernel.shape[0]
-    new_image = np.zeros(shape=(399, 300))
+    new_image = []
 
     while final_line <= image.shape[0]:    
         initial_column = 0
         final_column = 3
-        
+        matrix_line = []
+
         for i in range(image.shape[1] // stride):
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                         
@@ -33,20 +34,16 @@ def convolution(kernel, stride, padding):
 
             kernel_result = np.dot(kernel, kernel_area)
             
-            new_image[initial_line, initial_column] = np.sum(kernel_result)
+            matrix_line.append(np.sum(kernel_result))
         
             initial_column += stride 
             final_column += stride
         
+        new_image.append(matrix_line) 
         final_line += padding
         initial_line += padding  
 
-    return new_image
-
-conv_image = convolution(kernel_sharpen, 1, 1)
-
-imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
-plt.show()
+    return np.asmatrix(new_image)
 
 def max_pooling(image, stride, padding):
     # new_poll_image = np.zeros(shape=(image.shape[0], image.shape[1]))
@@ -69,11 +66,16 @@ def max_pooling(image, stride, padding):
             final_column += stride
         
         new_poll_image.append(matrix_line)
-        
+
         final_line += padding
         initial_line += padding  
 
     return np.asmatrix(new_poll_image)
+
+conv_image = convolution(kernel_sharpen, 1, 1)
+
+imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
+plt.show()
 
 poll_image = max_pooling(conv_image, 2, 2)
 
