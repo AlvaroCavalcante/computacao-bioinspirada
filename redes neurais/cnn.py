@@ -14,7 +14,6 @@ image = image[:,:,0]
 kernel = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) # sharpen
 # kernel = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]]) # outline
 
-position = 3
 stride = 1
 padding = 1
 
@@ -23,29 +22,26 @@ new_image = np.zeros(shape=(399, 300))
 initial_line = 0
 final_line = 3
 
-while position <= image.shape[0]:    
-    try:
-        initial_column = 0
-        final_column = 3
-        
-        for i in range(image.shape[1]):
-            kernel_area = image[initial_line:final_line, initial_column:final_column]
-                        
-            if kernel_area.shape != kernel.shape:
-                kernel_area = np.vstack([kernel_area, np.asmatrix([[0,0,0]])]) if kernel_area.shape[0] != kernel.shape[0] else kernel_area  
-                kernel_area = np.hstack([kernel_area, np.asmatrix([[0],[0],[0]])]) if kernel_area.shape[1] != kernel.shape[1] else kernel_area  
+while final_line <= image.shape[0]:    
+    initial_column = 0
+    final_column = 3
     
-            kernel_result = np.dot(kernel, kernel_area)
-            
-            new_image[initial_line, initial_column] = np.sum(kernel_result)
+    for i in range(image.shape[1]):
+        kernel_area = image[initial_line:final_line, initial_column:final_column]
+                    
+        if kernel_area.shape != kernel.shape:
+            kernel_area = np.vstack([kernel_area, np.asmatrix([[0,0,0]])]) if kernel_area.shape[0] != kernel.shape[0] else kernel_area  
+            kernel_area = np.hstack([kernel_area, np.asmatrix([[0],[0],[0]])]) if kernel_area.shape[1] != kernel.shape[1] else kernel_area  
+
+        kernel_result = np.dot(kernel, kernel_area)
         
-            initial_column += padding
-            final_column += padding
-        
-        final_line += stride
-        initial_line += stride  
-    except:
-        break
+        new_image[initial_line, initial_column] = np.sum(kernel_result)
+    
+        initial_column += padding
+        final_column += padding
+    
+    final_line += stride
+    initial_line += stride  
 
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
 position = 2
