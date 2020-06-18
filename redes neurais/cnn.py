@@ -23,7 +23,7 @@ new_image = np.zeros(shape=(399, 300))
 initial_line = 0
 final_line = 3
 
-while position < image.shape[0]:    
+while position <= image.shape[0]:    
     try:
         initial_column = 0
         final_column = 3
@@ -48,8 +48,32 @@ while position < image.shape[0]:
         break
 
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
+position = 2
+stride = 2
+padding = 2
 
 imgplot = plt.imshow(new_image, cmap='gray', vmin=0, vmax=255)
 plt.show()
 
-new_image
+new_poll_image = np.zeros(shape=(399, 300))
+
+initial_line = 0
+final_line = 2
+
+while position <= image.shape[0]:    
+    try:
+        initial_column = 0
+        final_column = 2
+        
+        for i in range(image.shape[1]):
+            kernel_area = image[initial_line:final_line, initial_column:final_column]
+                                    
+            new_poll_image[initial_line, initial_column - 1] = np.max(kernel_area)
+        
+            initial_column += padding
+            final_column += padding
+        
+        final_line += stride
+        initial_line += stride  
+    except:
+        break
