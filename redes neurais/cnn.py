@@ -15,7 +15,7 @@ image = image[:,:,0]
 kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
 kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
 
-def convolution(kernel, stride, padding):
+def convolution(image, kernel, stride, padding):
     initial_line = 0
     final_line = kernel.shape[0]
     new_image = []
@@ -72,7 +72,7 @@ def max_pooling(image, stride, padding):
 
     return np.asmatrix(new_poll_image)
 
-conv_image = convolution(kernel_sharpen, 1, 1)
+conv_image = convolution(image, kernel_sharpen, 1, 1)
 
 imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
 plt.show()
