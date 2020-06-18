@@ -94,18 +94,19 @@ def max_pooling(image, stride, padding):
 
     return np.asmatrix(new_poll_image)
 
-conv_image = convolution(image, kernel_sharpen, 1, 1)
+flatten_dataset = []
 
-show_image(conv_image)
-
-poll_image = max_pooling(conv_image, 2, 2)
-
-show_image(poll_image)
-
-conv_image = convolution(poll_image, kernel_sharpen, 1, 1)
-show_image(conv_image)
-
-poll_image = max_pooling(conv_image, 2, 2)
-show_image(poll_image)
-
-flatten_image = poll_image.flatten()
+for image in dataset:   
+    conv_image = convolution(image, kernel_sharpen, 1, 1)
+    show_image(conv_image)
+    
+    poll_image = max_pooling(conv_image, 2, 2)
+    show_image(poll_image)
+    
+    # conv_image = convolution(poll_image, kernel_sharpen, 1, 1)
+    # show_image(conv_image)
+    
+    # poll_image = max_pooling(conv_image, 2, 2)
+    # show_image(poll_image)
+    
+    flatten_dataset.append(poll_image.flatten())
