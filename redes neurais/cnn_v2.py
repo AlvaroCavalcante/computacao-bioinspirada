@@ -1,17 +1,34 @@
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
-
+from keras.preprocessing import image
 # from skimage.exposure import rescale_intensity
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
+import os
 
-image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
+dataset = []
 
-image = np.asarray(image)
-image = image[:,:,0]
+def generate_dataset(path, dataset, size=(128,128)):
+    for filepath in os.listdir(path):
+        loaded_image = image.load_img(path + filepath, target_size=size)
+        
+        img_array = np.asarray(loaded_image)
+        img_array = img_array[:,:,0]
+    
+        dataset.append(img_array)
+    return dataset
 
-imgplot = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
-plt.show()
+dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', dataset)
+
+dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', dataset)
+
+# image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
+
+# image = np.asarray(image_data)
+# image = image[:,:,0]
+
+# imgplot = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
+# plt.show()
 
 kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
 kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
@@ -75,16 +92,19 @@ def max_pooling(image, stride, padding):
 
     return np.asmatrix(new_poll_image)
 
-conv_image = convolution(image, kernel_sharpen, 1, 1)
-show_image(conv_image)
+flatten_dataset = []
 
-poll_image = max_pooling(conv_image, 2, 2)
-show_image(poll_image)
-
-conv_image = convolution(poll_image, kernel_sharpen, 1, 1)
-show_image(conv_image)
-
-poll_image = max_pooling(conv_image, 2, 2)
-show_image(poll_image)
-
-flatten_image = poll_image.flatten()
+for image in dataset:   
+    conv_image = convolution(image, kernel_sharpen, 1, 1)
+    show_image(conv_image)
+    
+    poll_image = max_pooling(conv_image, 2, 2)
+    show_image(poll_image)
+    
+    # conv_image = convolution(poll_image, kernel_sharpen, 1, 1)
+    # show_image(conv_image)
+    
+    # poll_image = max_pooling(conv_image, 2, 2)
+    # show_image(poll_image)
+    
+    flatten_dataset.append(poll_image.flatten())
