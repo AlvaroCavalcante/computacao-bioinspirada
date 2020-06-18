@@ -1,13 +1,31 @@
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.preprocessing import image
 # from skimage.exposure import rescale_intensity
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
+import os
 
-image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
+dataset = []
 
-image = np.asarray(image)
-image = image[:,:,0]
+def generate_dataset(path, dataset, size=(128,128)):
+    for filepath in os.listdir(path):
+        loaded_image = image.load_img(path + filepath, target_size=size)
+        
+        img_array = np.asarray(loaded_image)
+        img_array = img_array[:,:,0]
+    
+        dataset.append(img_array)
+    return dataset
+
+dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', dataset)
+
+dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', dataset)
+
+# image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
+
+# image = np.asarray(image_data)
+# image = image[:,:,0]
 
 # imgplot = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
 # plt.show()
