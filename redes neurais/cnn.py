@@ -12,7 +12,7 @@ image = image[:,:,0]
 # plt.show()
 
 kernel = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) # sharpen
-# kernel = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]]) # top sobel
+# kernel = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]]) # outline
 
 position = 3
 stride = 1
