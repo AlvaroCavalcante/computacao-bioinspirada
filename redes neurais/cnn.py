@@ -1,7 +1,8 @@
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
-from skimage.exposure import rescale_intensity
+# from skimage.exposure import rescale_intensity
+# new_image = rescale_intensity(new_image, in_range=(0, 255))
 
 image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
 
@@ -14,7 +15,6 @@ image = image[:,:,0]
 kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
 kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
 
-
 def convolution(kernel, stride, padding):
     initial_line = 0
     final_line = kernel.shape[0]
@@ -24,7 +24,7 @@ def convolution(kernel, stride, padding):
         initial_column = 0
         final_column = 3
         
-        for i in range(image.shape[1]):
+        for i in range(image.shape[1] // stride):
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                         
             if kernel_area.shape != kernel.shape:
@@ -35,43 +35,43 @@ def convolution(kernel, stride, padding):
             
             new_image[initial_line, initial_column] = np.sum(kernel_result)
         
-            initial_column += padding
-            final_column += padding
+            initial_column += stride 
+            final_column += stride
         
-        final_line += stride
-        initial_line += stride  
+        final_line += padding
+        initial_line += padding  
 
     return new_image
 
 conv_image = convolution(kernel_sharpen, 1, 1)
 
-imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
-plt.show()
+# imgplot = plt.imshow(conv_image, cmap='gray', vmin=0, vmax=255)
+# plt.show()
 
-# new_image = rescale_intensity(new_image, in_range=(0, 255))
-position = 2
-stride = 2
-padding = 2
+def max_pooling(image, stride, padding):
+    new_poll_image = np.zeros(shape=(image.shape[0], image.shape[1]))
 
-new_poll_image = np.zeros(shape=(399, 300))
+    initial_line = 0
+    final_line = 2
 
-initial_line = 0
-final_line = 2
-
-while position <= image.shape[0]:    
-    try:
+    while final_line <= image.shape[0]:    
         initial_column = 0
         final_column = 2
         
-        for i in range(image.shape[1]):
+        for i in range((image.shape[1] // stride) - stride):
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                                     
-            new_poll_image[initial_line, initial_column - 1] = np.max(kernel_area)
+            new_poll_image[initial_line, final_column - stride] = np.max(kernel_area)
         
-            initial_column += padding
-            final_column += padding
+            initial_column += stride
+            final_column += stride
         
-        final_line += stride
-        initial_line += stride  
-    except:
-        break
+        final_line += padding
+        initial_line += padding  
+
+    return new_poll_image
+
+poll_image = max_pooling(conv_image, 2, 2)
+
+imgplot = plt.imshow(poll_image, cmap='gray', vmin=0, vmax=255)
+plt.show()
