@@ -24,25 +24,28 @@ linha_inicial = 0
 linha_final = 3
 
 while position < image.shape[0]:    
-    coluna_inicial = 0
-    coluna_final = 3
-    
-    for i in range(image.shape[1]):
-        kernel_area = image[linha_inicial:linha_final, coluna_inicial:coluna_final]
+    try:
+        coluna_inicial = 0
+        coluna_final = 3
         
-        if kernel_area.shape != kernel.shape:
-            kernel_area = np.vstack([kernel_area, np.asmatrix([[0,0,0]])]) if kernel_area.shape[0] != kernel.shape[0] else kernel_area  
-            kernel_area = np.hstack([kernel_area, np.asmatrix([[0],[0],[0]])]) if kernel_area.shape[1] != kernel.shape[1] else kernel_area  
-
-        kernel_result = np.dot(kernel, kernel_area)
+        for i in range(image.shape[1]):
+            kernel_area = image[linha_inicial:linha_final, coluna_inicial:coluna_final]
+                        
+            if kernel_area.shape != kernel.shape:
+                kernel_area = np.vstack([kernel_area, np.asmatrix([[0,0,0]])]) if kernel_area.shape[0] != kernel.shape[0] else kernel_area  
+                kernel_area = np.hstack([kernel_area, np.asmatrix([[0],[0],[0]])]) if kernel_area.shape[1] != kernel.shape[1] else kernel_area  
+    
+            kernel_result = np.dot(kernel, kernel_area)
+            
+            new_image[linha_inicial, coluna_inicial] = np.sum(kernel_result)
         
-        new_image[linha_inicial, coluna_inicial] = np.sum(kernel_result)
-    
-        coluna_inicial += padding
-        coluna_final += padding
-    
-    linha_final += stride
-    linha_inicial += stride    
+            coluna_inicial += padding
+            coluna_final += padding
+        
+        linha_final += stride
+        linha_inicial += stride  
+    except:
+        break
 
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
 
