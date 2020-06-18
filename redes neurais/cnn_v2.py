@@ -14,13 +14,16 @@ def generate_dataset(path, dataset, size=(128,128)):
         
         img_array = np.asarray(loaded_image)
         img_array = img_array[:,:,0]
+        
+        reescaled_img_array = img_array/255
     
-        dataset.append(img_array)
+        dataset.append(reescaled_img_array)
+        
     return dataset
 
-dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', dataset)
+dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/cachorro/', dataset)
 
-dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', dataset)
+dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/gato/', dataset)
 
 # image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
 
@@ -96,15 +99,9 @@ flatten_dataset = []
 
 for image in dataset:   
     conv_image = convolution(image, kernel_sharpen, 1, 1)
-    show_image(conv_image)
-    
-    poll_image = max_pooling(conv_image, 2, 2)
-    show_image(poll_image)
-    
-    # conv_image = convolution(poll_image, kernel_sharpen, 1, 1)
     # show_image(conv_image)
     
-    # poll_image = max_pooling(conv_image, 2, 2)
+    poll_image = max_pooling(conv_image, 2, 2)
     # show_image(poll_image)
-    
+        
     flatten_dataset.append(poll_image.flatten())
