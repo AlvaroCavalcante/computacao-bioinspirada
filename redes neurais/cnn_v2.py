@@ -6,7 +6,8 @@ from keras.preprocessing import image
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
 import os
 
-dataset = []
+train_dataset = []
+test_dataset = []
 
 def generate_dataset(path, dataset, size=(128,128)):
     for filepath in os.listdir(path):
@@ -21,17 +22,11 @@ def generate_dataset(path, dataset, size=(128,128)):
         
     return dataset
 
-dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/cachorro/', dataset)
+train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/train/cachorro/', train_dataset)
+train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/train/gato/', train_dataset)
 
-dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/gato/', dataset)
-
-# image = Image.open("/home/alvaro/Documentos/mestrado/computação bio/redes neurais/img_dataset/dog_small.png")
-
-# image = np.asarray(image_data)
-# image = image[:,:,0]
-
-# imgplot = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
-# plt.show()
+test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/test/cachorro/', test_dataset)
+test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/test/gato/', test_dataset)
 
 kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
 kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
@@ -95,13 +90,21 @@ def max_pooling(image, stride, padding):
 
     return np.asmatrix(new_poll_image)
 
-flatten_dataset = []
-
-for image in dataset:   
-    conv_image = convolution(image, kernel_sharpen, 1, 1)
-    # show_image(conv_image)
-    
-    poll_image = max_pooling(conv_image, 2, 2)
-    # show_image(poll_image)
+def apply_conv(dataset, kernel):
+    flatten_dataset = []
+    for image in dataset:   
+        conv_image = convolution(image, kernel, 1, 1)
+        # show_image(conv_image)
         
-    flatten_dataset.append(poll_image.flatten())
+        poll_image = max_pooling(conv_image, 2, 2)
+        # show_image(poll_image)
+            
+        flatten_dataset.append(poll_image.flatten())
+
+    return flatten_dataset
+
+flatten_train = apply_conv(train_dataset, kernel_sharpen)
+flatten_test = apply_conv(test_dataset, kernel_sharpen)
+
+flatten_train = np.array(flatten_train)[:,0,:]
+flatten_test = np.array(flatten_test)[:,0,:]
