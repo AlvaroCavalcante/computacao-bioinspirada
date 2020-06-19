@@ -116,7 +116,7 @@ import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 
-data = [0] * 15 + [1] * 15
+data = [0] * 15 + [1] * 15 # 0 cachorro e 1 gato
 train_label = pd.Series(data)
 
 classificador = Sequential()
@@ -135,3 +135,15 @@ classificador.compile(optimizer = 'adam', loss = 'binary_crossentropy',
                       metrics = ['accuracy'])
 
 classificador.fit(flatten_train, train_label, epochs = 25)
+
+previsao = classificador.predict(flatten_test)
+
+data = [0] * 6 + [1] * 6
+test_label = pd.Series(data)
+
+previsao[previsao >= 0.5] = 1
+previsao[previsao < 0.5] = 0
+
+previsao = previsao[:, 0]
+
+precisao = (test_label == previsao).sum() / len(test_label)
