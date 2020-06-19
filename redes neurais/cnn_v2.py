@@ -9,8 +9,8 @@ import os
 train_dataset = []
 test_dataset = []
 
-def generate_dataset(path, dataset, size=(128,128)):
-    for filepath in os.listdir(path):
+def generate_dataset(path, dataset, max_images, size=(128,128)):
+    for filepath in os.listdir(path)[0:max_images]:
         loaded_image = image.load_img(path + filepath, target_size=size)
         
         img_array = np.asarray(loaded_image)
@@ -22,11 +22,11 @@ def generate_dataset(path, dataset, size=(128,128)):
         
     return dataset
 
-train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/train/cachorro/', train_dataset)
-train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/train/gato/', train_dataset)
+train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/cachorro/', train_dataset, 50)
+train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/gato/', train_dataset, 50)
 
-test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/test/cachorro/', test_dataset)
-test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/example_set/test/gato/', test_dataset)
+test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', test_dataset, 25)
+test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', test_dataset, 25)
 
 kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
 kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
@@ -116,12 +116,12 @@ import pandas as pd
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 
-data = [0] * 15 + [1] * 15 # 0 cachorro e 1 gato
+data = [0] * (flatten_train.shape[0] // 2) + [1] * (flatten_train.shape[0] // 2) # 0 cachorro e 1 gato
 train_label = pd.Series(data)
 
 classificador = Sequential()
 
-classificador.add(Dense(30, input_shape=(63, 62, 1)))
+classificador.add(Dense(flatten_train.shape[0], input_shape=(63, 62, 1)))
 
 classificador.add(Flatten())
 
@@ -138,7 +138,7 @@ classificador.fit(flatten_train, train_label, epochs = 25)
 
 previsao = classificador.predict(flatten_test)
 
-data = [0] * 6 + [1] * 6
+data = [0] * (flatten_test.shape[0] // 2) + [1] * (flatten_test.shape[0] // 2) # 0 cachorro e 1 gato
 test_label = pd.Series(data)
 
 previsao[previsao >= 0.5] = 1
@@ -147,3 +147,5 @@ previsao[previsao < 0.5] = 0
 previsao = previsao[:, 0]
 
 precisao = (test_label == previsao).sum() / len(test_label)
+
+print('Precisão de teste', precisao)
