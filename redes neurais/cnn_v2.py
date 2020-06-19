@@ -99,12 +99,39 @@ def apply_conv(dataset, kernel):
         poll_image = max_pooling(conv_image, 2, 2)
         # show_image(poll_image)
             
-        flatten_dataset.append(poll_image.flatten())
+        flatten_dataset.append(poll_image) # .flatten()
 
     return flatten_dataset
 
 flatten_train = apply_conv(train_dataset, kernel_sharpen)
 flatten_test = apply_conv(test_dataset, kernel_sharpen)
 
-flatten_train = np.array(flatten_train)[:,0,:]
-flatten_test = np.array(flatten_test)[:,0,:]
+flatten_train = np.array(flatten_train) # [:,0,:]
+flatten_test = np.array(flatten_test) # [:,0,:]
+
+flatten_train = np.expand_dims(flatten_train, axis=-1)
+flatten_test = np.expand_dims(flatten_test, axis=-1)
+
+import pandas as pd
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Flatten
+
+data = [0] * 15 + [1] * 15
+train_label = pd.Series(data)
+
+classificador = Sequential()
+
+classificador.add(Dense(30, input_shape=(63, 62, 1)))
+
+classificador.add(Flatten())
+
+classificador.add(Dense(units = 128, activation = 'relu'))
+classificador.add(Dropout(0.2))
+classificador.add(Dense(units = 128, activation = 'relu'))
+classificador.add(Dropout(0.2))
+classificador.add(Dense(units = 1, activation = 'sigmoid'))
+
+classificador.compile(optimizer = 'adam', loss = 'binary_crossentropy',
+                      metrics = ['accuracy'])
+
+classificador.fit(flatten_train, train_label, epochs = 25)
