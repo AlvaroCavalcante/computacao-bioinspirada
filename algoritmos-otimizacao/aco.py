@@ -27,6 +27,8 @@ def iniciar_colonia(n_formigas, n_cidades):
     return colonia
 
 def get_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cidades):
+    distancias = []
+
     for i in formigas:
         coordenadas_cidade = dataframe[dataframe['index'] == i]
         coordenadas_cidade = coordenadas_cidade.iloc[:, 1:3].values
@@ -34,13 +36,15 @@ def get_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cidades):
         cidades = dataframe[dataframe['index'] != i]
         cidades = cidades.iloc[:, 1:3].values 
 
-        distancias = []      
+        distancia_formiga = []      
         
         for vizinho in cidades:
-            distancias.append(get_distancia_entre_pontos([coordenadas_cidade[0][0], coordenadas_cidade[0][1]], \
+            distancia_formiga.append(get_distancia_entre_pontos([coordenadas_cidade[0][0], coordenadas_cidade[0][1]], \
                             [vizinho[0], vizinho[1]]))
 
-        return distancias
+        distancias.append(distancia_formiga)
+
+    return distancias
 
 combinacao_cidades = list(itertools.combinations(dataframe['index'].values, 2))
 
