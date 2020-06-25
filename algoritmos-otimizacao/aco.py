@@ -86,6 +86,7 @@ def aco(n_formigas, dataframe, epocas = 10):
     arestas_cidades = get_dicionario_cidades(combinacao_cidades)
 
     melhor_distancia = []
+    melhor_caminho = []
 
     for i in range(epocas):
         execucoes = 0
@@ -104,7 +105,8 @@ def aco(n_formigas, dataframe, epocas = 10):
             execucoes += 1
         
         melhor_distancia.append(min(distancia_total_formigas))
+        melhor_caminho = formigas[distancia_total_formigas.index(min(distancia_total_formigas))]
 
-    return formigas
+    return melhor_distancia, melhor_caminho
 
-formigas = aco(20, dataframe)
+melhor_distancia, melhor_caminho = aco(20, dataframe)
