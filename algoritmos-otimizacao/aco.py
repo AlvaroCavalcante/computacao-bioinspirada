@@ -72,27 +72,32 @@ def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa = 1,
         
     return proximos_movimentos, distancias_percorridas
 
-def movimentar_formigas(formigas, cidades, movimento_formigas, distancia_percorrida, Q = 100):
+def movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida, Q = 100):
     for i in range(len(formigas)):
         formigas[i].append(movimento_formigas[i])
         feromonios_depositados = Q / distancia_percorrida[i]
-        cidades[movimento_formigas[i]] = [feromonios_depositados + cidades[movimento_formigas[i]][0]]
+        arestas_cidades[movimento_formigas[i]] = [feromonios_depositados + arestas_cidades[movimento_formigas[i]][0]]
 
     return formigas
 
-combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
+def aco(n_formigas, dataframe):
+    combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
-arestas_cidades = get_dicionario_cidades(combinacao_cidades)
+    arestas_cidades = get_dicionario_cidades(combinacao_cidades)
 
-formigas = iniciar_colonia(20, len(dataframe) - 1)
+    formigas = iniciar_colonia(n_formigas, len(dataframe) - 1)
 
-execucoes = 0
+    execucoes = 0
 
-while execucoes < len(dataframe) -1:    
-    distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
-    
-    movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades) # TODO: estou pegando a distância, mas falta os feromônios
-    
-    formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
-      
-    execucoes += 1
+    while execucoes < len(dataframe) -1:    
+        distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
+        
+        movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
+        
+        formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
+        
+        execucoes += 1
+
+    return formigas
+
+formigas = aco(20, dataframe)
