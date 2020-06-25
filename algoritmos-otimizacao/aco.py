@@ -51,17 +51,17 @@ def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa = 1,
     distancias_percorridas = []
     
     for distancia in distancia_cidades_vizinhas:
-        proba_cidade = [0, 0]
-        count = 0
+        probabilidades = []
+
         for cidade in distancia:
             inverso_distancia = 1 / distancia[cidade]
             
-            p = (arestas_cidades[cidade][0]**alfa) * (inverso_distancia**beta) / 1
-            
-            proba_cidade = [p, count] if p > proba_cidade[0] else proba_cidade
-            count += 1
+            p = (arestas_cidades[cidade][0]**alfa) * (inverso_distancia**beta)
+            probabilidades.append(p)
         
-        cidade_mais_proxima = list(distancia.keys())[proba_cidade[1]]
+        proba_cidade = np.array(probabilidades) / sum(probabilidades)
+        
+        cidade_mais_proxima = list(distancia.keys())[proba_cidade.argmax()]
         
         distancias_percorridas.append(distancia[cidade_mais_proxima])
        
