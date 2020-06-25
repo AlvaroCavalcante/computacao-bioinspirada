@@ -34,7 +34,9 @@ def get_distancia_cidades_vizinhas(formigas, dataframe):
         coordenadas_formiga = dataframe[dataframe['index'] == i[-1][-1]]
         coordenadas_formiga = coordenadas_formiga.iloc[:, 1:3].values
         
-        df_cidades = dataframe[dataframe['index'] != i[-1][-1]]
+        removed_cities = list(map(lambda x: x[-1], i))
+
+        df_cidades = dataframe[~dataframe['index'].isin(removed_cities)]
         df_cidades = df_cidades.values 
 
         distancia_formiga = {}      
@@ -82,17 +84,15 @@ combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
 arestas_cidades = get_dicionario_cidades(combinacao_cidades)
 
+formigas = iniciar_colonia(20, len(dataframe) - 1)
+
 execucoes = 0
 
-while execucoes < 10:
-    formigas = iniciar_colonia(20, len(dataframe) - 1)
-    
+while execucoes < 10:    
     distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
     
     movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades) # TODO: estou pegando a distância, mas falta os feromônios
     
     formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
-    
-    print(get_distancia_entre_pontos([10,20], [30,40]))
-    
+      
     execucoes += 1
