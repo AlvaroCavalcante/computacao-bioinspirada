@@ -75,13 +75,17 @@ def movimentar_formigas(formigas, cidades, movimento_formigas, distancia_percorr
 combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
 cidades = get_dicionario_cidades(combinacao_cidades)
+execucoes = 0
 
-formigas = iniciar_colonia(20, len(dataframe))
-
-distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cidades)
-
-movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, cidades) # TODO: estou pegando a distância, mas falta os feromônios
-
-formigas = movimentar_formigas(formigas, cidades, movimento_formigas, distancia_percorrida)
-
-print(get_distancia_entre_pontos([10,20], [30,40]))
+while execucoes < 10:
+    formigas = iniciar_colonia(20, len(dataframe))
+    
+    distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cidades)
+    
+    movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, cidades) # TODO: estou pegando a distância, mas falta os feromônios
+    
+    formigas = movimentar_formigas(formigas, cidades, movimento_formigas, distancia_percorrida)
+    
+    print(get_distancia_entre_pontos([10,20], [30,40]))
+    
+    execucoes += 1
