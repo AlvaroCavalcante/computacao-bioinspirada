@@ -80,26 +80,30 @@ def movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia
 
     return formigas
 
-def aco(n_formigas, dataframe):
+def aco(n_formigas, dataframe, epocas = 10):
     combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
     arestas_cidades = get_dicionario_cidades(combinacao_cidades)
 
-    formigas = iniciar_colonia(n_formigas, len(dataframe) - 1)
-    distancia_total_formigas = [0] * n_formigas
+    melhor_distancia = []
 
-    execucoes = 0
+    for i in range(epocas):
+        execucoes = 0
+        formigas = iniciar_colonia(n_formigas, len(dataframe) - 1)
+        distancia_total_formigas = [0] * n_formigas
 
-    while execucoes < len(dataframe) -1:    
-        distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
+        while execucoes < len(dataframe) -1:    
+            distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
+            
+            movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
+                
+            formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
+            
+            distancia_total_formigas = list(map(lambda x, y: x + y, distancia_total_formigas, distancia_percorrida))
+
+            execucoes += 1
         
-        movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
-               
-        formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
-        
-        distancia_total_formigas = list(map(lambda x, y: x + y, distancia_total_formigas, distancia_percorrida))
-
-        execucoes += 1
+        melhor_distancia.append(min(distancia_total_formigas))
 
     return formigas
 
