@@ -31,19 +31,16 @@ def get_distancia_cidades_vizinhas(formigas, dataframe):
     distancias = []
 
     for i in formigas:
-        coordenadas_formiga = dataframe[dataframe['index'] == i[-1][-1]]
-        coordenadas_formiga = coordenadas_formiga.iloc[:, 1:3].values
+        coordenadas_formiga = dataframe[dataframe['index'] == i[-1][-1]].values
         
         removed_cities = list(map(lambda x: x[-1], i))
-
-        df_cidades = dataframe[~dataframe['index'].isin(removed_cities)]
-        df_cidades = df_cidades.values 
+        df_cidades = dataframe[~dataframe['index'].isin(removed_cities)].values 
 
         distancia_formiga = {}      
         
         for vizinho in df_cidades:                
-            distancia_formiga[(i[-1][-1], int(vizinho[0]))] = get_distancia_entre_pontos([coordenadas_formiga[0][0], \
-                                coordenadas_formiga[0][1]], [vizinho[1], vizinho[2]])
+            distancia_formiga[(i[-1][-1], int(vizinho[0]))] = get_distancia_entre_pontos([coordenadas_formiga[0][1], \
+                                coordenadas_formiga[0][2]], [vizinho[1], vizinho[2]])
 
         distancias.append(distancia_formiga)
 
