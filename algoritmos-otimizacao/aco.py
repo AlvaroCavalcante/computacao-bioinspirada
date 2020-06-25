@@ -67,7 +67,7 @@ def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa = 1,
         cidade_mais_proxima = list(distancia.keys())[proba_cidade[1]]
         
         distancias_percorridas.append(distancia[cidade_mais_proxima])
-        
+       
         proximos_movimentos.append(cidade_mais_proxima)
         
     return proximos_movimentos, distancias_percorridas
@@ -86,6 +86,7 @@ def aco(n_formigas, dataframe):
     arestas_cidades = get_dicionario_cidades(combinacao_cidades)
 
     formigas = iniciar_colonia(n_formigas, len(dataframe) - 1)
+    distancia_total_formigas = [0] * n_formigas
 
     execucoes = 0
 
@@ -93,9 +94,11 @@ def aco(n_formigas, dataframe):
         distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
         
         movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
-        
+               
         formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
         
+        distancia_total_formigas = list(map(lambda x, y: x + y, distancia_total_formigas, distancia_percorrida))
+
         execucoes += 1
 
     return formigas
