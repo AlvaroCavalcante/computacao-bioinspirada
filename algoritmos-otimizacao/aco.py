@@ -15,7 +15,7 @@ def get_distancia_entre_pontos(cidade1, cidade2): # distância euclidiana
 def get_dicionario_cidades(combinacao_cidades):
     cidades = {}
     for i in combinacao_cidades:
-        cidades[i] = [1] 
+        cidades[i] = [0.000001] 
 
     return cidades
 
@@ -46,7 +46,7 @@ def get_distancia_cidades_vizinhas(formigas, dataframe):
 
     return distancias
 
-def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa = 1, beta = 5):
+def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa=1, beta=5):
     proximos_movimentos = []
     distancias_percorridas = []
     
@@ -69,11 +69,12 @@ def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa = 1,
         
     return proximos_movimentos, distancias_percorridas
 
-def movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formigas, distancia_percorrida, Q = 100):
+def movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formigas, distancia_percorrida, Q=100, p=0.5):
     for i in range(len(formigas)):
         formigas[i].append(movimento_formigas[i])
         feromonios_depositados = Q / distancia_percorrida[i]
-        arestas_cidades_temporarias[movimento_formigas[i]] = [feromonios_depositados + arestas_cidades_temporarias[movimento_formigas[i]][0]]
+        arestas_cidades_temporarias[movimento_formigas[i]] = \
+            [(1 - p) * arestas_cidades_temporarias[movimento_formigas[i]][0] + feromonios_depositados]
 
     return formigas
 
@@ -108,4 +109,4 @@ def aco(n_formigas, dataframe, epocas = 10):
 
     return melhor_distancia, melhor_caminho
 
-melhor_distancia, melhor_caminho = aco(20, dataframe)
+melhor_distancia, melhor_caminho = aco(51, dataframe)
