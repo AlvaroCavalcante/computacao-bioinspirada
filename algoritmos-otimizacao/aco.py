@@ -22,16 +22,16 @@ def iniciar_colonia(n_formigas, n_cidades):
     colonia = []
 
     for i in range(n_formigas):
-        colonia.append(random.randint(0, n_cidades))
+        colonia.append((random.randint(0, n_cidades),))
 
     return colonia
 
-def get_distancia_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cidades):
+def get_distancia_cidades_vizinhas(formigas, dataframe):
     distancias = []
 
     for i in formigas:
-        coordenadas_cidade = dataframe[dataframe['index'] == i]
-        coordenadas_cidade = coordenadas_cidade.iloc[:, 1:3].values
+        coordenadas_formiga = dataframe[dataframe['index'] == i]
+        coordenadas_formiga = coordenadas_formiga.iloc[:, 1:3].values
         
         df_cidades = dataframe[dataframe['index'] != i]
         df_cidades = df_cidades.values 
@@ -39,7 +39,7 @@ def get_distancia_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cida
         distancia_formiga = {}      
         
         for vizinho in df_cidades:                
-            distancia_formiga[(i, vizinho[0])] =  get_distancia_entre_pontos([coordenadas_cidade[0][0], coordenadas_cidade[0][1]], \
+            distancia_formiga[(i[-1], vizinho[0])] = get_distancia_entre_pontos([coordenadas_formiga[0][0], coordenadas_formiga[0][1]], \
                             [vizinho[1], vizinho[2]])
 
         distancias.append(distancia_formiga)
@@ -71,20 +71,22 @@ def get_proximo_movimento(distancia_cidades_vizinhas, cidades, alfa = 1, beta = 
 
 def movimentar_formigas(formigas, cidades, movimento_formigas, distancia_percorrida):
     print(distancia_percorrida)
+    return ''
 
 combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
-cidades = get_dicionario_cidades(combinacao_cidades)
+arestas_cidades = get_dicionario_cidades(combinacao_cidades)
+
 execucoes = 0
 
 while execucoes < 10:
     formigas = iniciar_colonia(20, len(dataframe))
     
-    distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, cidades, dataframe, combinacao_cidades)
+    distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
     
-    movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, cidades) # TODO: estou pegando a distância, mas falta os feromônios
+    movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades) # TODO: estou pegando a distância, mas falta os feromônios
     
-    formigas = movimentar_formigas(formigas, cidades, movimento_formigas, distancia_percorrida)
+    formigas = movimentar_formigas(formigas, arestas_cidades, movimento_formigas, distancia_percorrida)
     
     print(get_distancia_entre_pontos([10,20], [30,40]))
     
