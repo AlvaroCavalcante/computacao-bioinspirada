@@ -88,7 +88,7 @@ formigas = iniciar_colonia(20, len(dataframe) - 1)
 
 execucoes = 0
 
-while execucoes < 10:    
+while execucoes < len(dataframe) -1:    
     distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
     
     movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades) # TODO: estou pegando a distância, mas falta os feromônios
