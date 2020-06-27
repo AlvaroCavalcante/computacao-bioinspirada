@@ -35,11 +35,22 @@ def show_image(image):
     imgplot = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
     plt.show()
 
-def convolution(image, kernel, stride, padding):
+def get_img_with_padding(image):
+    image = np.insert(image, 0, 0, axis=0)
+    image = np.insert(image, 0, 0, axis=1)
+    image = np.vstack([image, np.zeros(image.shape[1])])
+    image = np.hstack([image, np.zeros((image.shape[0], 1))])
+        
+    return image
+
+def convolution(image, kernel, stride, padding = False):
     initial_line = 0
     final_line = kernel.shape[0]
     new_image = []
 
+    if padding:
+        image = get_img_with_padding(image)
+    
     while final_line <= image.shape[0]:    
         initial_column = 0
         final_column = kernel.shape[1]
@@ -56,8 +67,8 @@ def convolution(image, kernel, stride, padding):
             final_column += stride
         
         new_image.append(matrix_line) 
-        final_line += padding
-        initial_line += padding   # TODO: alterar esse conceito de padding
+        final_line += 1
+        initial_line += 1
 
     return np.asmatrix(new_image)
 
@@ -95,7 +106,7 @@ def max_pooling(image, stride, padding):
 def apply_conv(dataset, kernel):
     flatten_dataset = []
     for image in dataset:   
-        conv_image = convolution(image, kernel, 1, 1)
+        conv_image = convolution(image, kernel, 1, True)
         show_image(conv_image * 255)
         
         conv_image_relu = apply_relu(conv_image)
