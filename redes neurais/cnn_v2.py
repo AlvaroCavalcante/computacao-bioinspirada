@@ -22,11 +22,11 @@ def generate_dataset(path, dataset, max_images, size=(128,128)):
         
     return dataset
 
-train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/cachorro/', train_dataset, 50)
-train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/gato/', train_dataset, 50)
+train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/cachorro/', train_dataset, 5)
+train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/gato/', train_dataset, 5)
 
-test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', test_dataset, 25)
-test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', test_dataset, 25)
+test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', test_dataset, 3)
+test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', test_dataset, 3)
 
 kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
 kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
@@ -61,9 +61,15 @@ def convolution(image, kernel, stride, padding):
         
         new_image.append(matrix_line) 
         final_line += padding
-        initial_line += padding  
+        initial_line += padding   # TODO: alterar esse conceito de padding
 
     return np.asmatrix(new_image)
+
+def apply_relu(image):
+    relu_img = image.copy() # deepcopy
+    
+    relu_img[relu_img < 0] = 0
+    return relu_img
 
 def max_pooling(image, stride, padding):
     new_poll_image = []
@@ -94,11 +100,14 @@ def apply_conv(dataset, kernel):
     flatten_dataset = []
     for image in dataset:   
         conv_image = convolution(image, kernel, 1, 1)
-        # show_image(conv_image)
+        show_image(conv_image * 255)
         
-        poll_image = max_pooling(conv_image, 2, 2)
-        # show_image(poll_image)
-            
+        conv_image_relu = apply_relu(conv_image)
+        show_image(conv_image_relu * 255)
+
+        poll_image = max_pooling(conv_image_relu, 2, 2)
+        show_image(poll_image * 255)
+                    
         flatten_dataset.append(poll_image) # .flatten()
 
     return flatten_dataset
@@ -111,6 +120,8 @@ flatten_test = np.array(flatten_test) # [:,0,:]
 
 flatten_train = np.expand_dims(flatten_train, axis=-1)
 flatten_test = np.expand_dims(flatten_test, axis=-1)
+
+## training a neural network
 
 import pandas as pd
 from keras.models import Sequential
