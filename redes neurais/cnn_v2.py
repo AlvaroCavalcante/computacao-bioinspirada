@@ -2,14 +2,14 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.preprocessing import image
-# from skimage.exposure import rescale_intensity
+from skimage.exposure import rescale_intensity
 # new_image = rescale_intensity(new_image, in_range=(0, 255))
 import os
 
 train_dataset = []
 test_dataset = []
 
-def generate_dataset(path, dataset, max_images, size=(128,128)):
+def generate_dataset(path, dataset, max_images, size=(64,64)):
     for filepath in os.listdir(path)[0:max_images]:
         loaded_image = image.load_img(path + filepath, target_size=size)
         
@@ -42,16 +42,12 @@ def convolution(image, kernel, stride, padding):
 
     while final_line <= image.shape[0]:    
         initial_column = 0
-        final_column = 3
+        final_column = kernel.shape[1]
         matrix_line = []
 
-        for i in range(image.shape[1] // stride):
+        while final_column <= image.shape[1]:
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                         
-            if kernel_area.shape != kernel.shape:
-                kernel_area = np.vstack([kernel_area, np.asmatrix([[0,0,0]])]) if kernel_area.shape[0] != kernel.shape[0] else kernel_area  
-                kernel_area = np.hstack([kernel_area, np.asmatrix([[0],[0],[0]])]) if kernel_area.shape[1] != kernel.shape[1] else kernel_area  
-
             kernel_result = np.dot(kernel, kernel_area)
             
             matrix_line.append(np.sum(kernel_result))
