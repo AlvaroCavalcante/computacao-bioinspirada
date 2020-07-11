@@ -33,8 +33,8 @@ def get_distancia_cidades_vizinhas(formigas, dataframe):
     for i in formigas:
         coordenadas_formiga = dataframe[dataframe['index'] == i[-1][-1]].values
         
-        removed_cities = list(map(lambda x: x[-1], i))
-        df_cidades = dataframe[~dataframe['index'].isin(removed_cities)].values 
+        removed_cities = list(map(lambda x: x[-1], i)) # Listando as cidades que ela já visitou
+        df_cidades = dataframe[~dataframe['index'].isin(removed_cities)].values # removendo as cidades que a formiga já visitou
 
         distancia_formiga = {}      
         
@@ -46,18 +46,23 @@ def get_distancia_cidades_vizinhas(formigas, dataframe):
 
     return distancias
 
+def calcular_probabilidade_movimento(distancia, arestas_cidades, alfa, beta):
+    probabilidades = []
+
+    for cidade in distancia:
+        inverso_distancia = 1 / distancia[cidade]
+        
+        p = (arestas_cidades[cidade][0]**alfa) * (inverso_distancia**beta)
+        probabilidades.append(p)
+
+    return probabilidades
+
 def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa=1, beta=5):
     proximos_movimentos = []
     distancias_percorridas = []
     
     for distancia in distancia_cidades_vizinhas:
-        probabilidades = []
-
-        for cidade in distancia:
-            inverso_distancia = 1 / distancia[cidade]
-            
-            p = (arestas_cidades[cidade][0]**alfa) * (inverso_distancia**beta)
-            probabilidades.append(p)
+        probabilidades = calcular_probabilidade_movimento(distancia, arestas_cidades, alfa, beta)
         
         proba_cidade = np.array(probabilidades) / sum(probabilidades)
         
@@ -78,7 +83,7 @@ def movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formiga
 
     return formigas
 
-def aco(n_formigas, dataframe, epocas = 10):
+def aco(n_formigas, dataframe, epocas = 15):
     combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
     arestas_cidades = get_dicionario_cidades(combinacao_cidades)
