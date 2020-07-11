@@ -36,6 +36,7 @@ def show_image(image):
     plt.show()
 
 def get_img_with_padding(image):
+    # pad formula = kernel_size - 1 / 2
     image = np.insert(image, 0, 0, axis=0)
     image = np.insert(image, 0, 0, axis=1)
     image = np.vstack([image, np.zeros(image.shape[1])])
@@ -78,18 +79,18 @@ def apply_relu(image):
     relu_img[relu_img < 0] = 0
     return relu_img
 
-def max_pooling(image, stride, padding):
+def max_pooling(image, stride, poll_size = 2):
     new_poll_image = []
 
     initial_line = 0
-    final_line = 2
+    final_line = poll_size
     
     while final_line <= image.shape[0]:    
         initial_column = 0
-        final_column = 2
+        final_column = poll_size
         matrix_line = []
         
-        for i in range((image.shape[1] // stride) - stride):
+        while final_column < (image.shape[1] - stride):
             kernel_area = image[initial_line:final_line, initial_column:final_column]
                                     
             matrix_line.append(np.max(kernel_area))
@@ -98,15 +99,21 @@ def max_pooling(image, stride, padding):
         
         new_poll_image.append(matrix_line)
 
-        final_line += padding
-        initial_line += padding  
+        final_line += stride
+        initial_line += stride  
 
     return np.asmatrix(new_poll_image)
 
 def apply_conv(dataset, kernel):
     flatten_dataset = []
     for image in dataset:   
-        conv_image = convolution(image, kernel, 1, True)
+        conv_image = convolution(image, kernel, 1)
+        show_image(conv_image * 255)
+        
+        conv_image_relu = apply_relu(conv_image)
+        show_image(conv_image_relu * 255)
+        
+        conv_image = convolution(conv_image, kernel, 1)
         show_image(conv_image * 255)
         
         conv_image_relu = apply_relu(conv_image)
