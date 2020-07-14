@@ -3,6 +3,7 @@ import random
 import numpy as np
 import pandas as pd
 import itertools
+import matplotlib.pyplot as plt
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/algoritmos-otimizacao/dataset/berlin.csv')
 
@@ -21,6 +22,7 @@ def get_dicionario_cidades(combinacao_cidades):
 def iniciar_colonia_aleatoria(n_formigas, n_cidades):
     colonia = []
     random.seed(0)
+
     for i in range(n_formigas):
         colonia.append([(random.randint(1, n_cidades),)])
 
@@ -132,7 +134,31 @@ def aco(n_formigas, dataframe, epocas = 5):
 
     return melhor_distancia, melhor_caminho
 
+def get_coordenadas_melhor_rota(dataframe, melhor_caminho):
+    melhor_x = []
+    melhor_y = []
+    for caminho in melhor_caminho:
+        cidade_inicial = dataframe[dataframe['index'] == caminho[0]]
+        melhor_x.append(cidade_inicial['x'].values[0])
+        melhor_y.append(cidade_inicial['y'].values[0])
+
+        if len(caminho == 2):
+            cidade_final = dataframe[dataframe['index'] == caminho[1]]
+            melhor_x.append(cidade_final['x'].values[0])
+            melhor_y.append(cidade_final['y'].values[0])
+
+    return melhor_x, melhor_y
+
+def mostrar_grafico_resultados(dataframe, melhor_x, melhor_y):
+    plt.scatter(dataframe['x'].values, dataframe['y'].values)
+    plt.plot(melhor_x, melhor_y, '.r-') 
+    plt.show()
+
 melhor_distancia, melhor_caminho = aco(51, dataframe)
+
+melhor_x, melhor_y = get_coordenadas_melhor_rota(dataframe, melhor_caminho)
+
+mostrar_grafico_resultados(dataframe, melhor_x, melhor_y)
 
 print('Melhor distância', melhor_distancia)
 print('Melhor caminho', melhor_caminho)
