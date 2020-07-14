@@ -89,7 +89,7 @@ def movimentar_formigas(formigas, movimento_formigas):
 
     return formigas
 
-def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=100, p=0.5):
+def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=100, p=0.5, b=5):
     count = 0
     for formiga in formigas:
         formiga = formiga[1:len(formiga)-1]
@@ -97,7 +97,7 @@ def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=
             feromonios_depositados = Q / distancia_total_formigas[count] # calcula a quantidade de feromônios
             # aplica os feromônios nas arestas da cidade
             arestas_cidades[aresta] = \
-                [(1 - p) * arestas_cidades[aresta][0] + feromonios_depositados]
+                [(1 - p) * arestas_cidades[aresta][0] + feromonios_depositados + (b*feromonios_depositados)]
 
         count += 1
 
