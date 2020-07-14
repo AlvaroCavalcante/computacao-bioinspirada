@@ -100,6 +100,7 @@ def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=
             feromonio_formiga_elitista = b*feromonios_depositados if \
                 min(distancia_total_formigas) == distancia_total_formigas[count] else 0
 
+# TODO: COLOCAR UM +=
             arestas_cidades[aresta] = \
                 [(1 - p) * arestas_cidades[aresta][0] + feromonios_depositados + feromonio_formiga_elitista]
 
@@ -160,7 +161,15 @@ def mostrar_grafico_resultados(dataframe, melhor_x, melhor_y):
     plt.plot(melhor_x, melhor_y, '.r-') 
     plt.show()
 
-melhor_distancia, melhor_caminho, distancia_media = aco(51, dataframe, 5)
+melhor_distancia, melhor_caminho, distancia_media = [99999],[(0)],[99999]
+
+for i in range(5):
+    resultado_aco = aco(51, dataframe, 5)
+
+    distancia_media = resultado_aco[2] if min(resultado_aco[0]) < min(melhor_distancia) else distancia_media
+    melhor_caminho = resultado_aco[1] if min(resultado_aco[0]) < min(melhor_distancia) else melhor_caminho
+    melhor_distancia = resultado_aco[0] if min(resultado_aco[0]) < min(melhor_distancia) else melhor_distancia
+
 
 melhor_x, melhor_y = get_coordenadas_melhor_rota(dataframe, melhor_caminho)
 
