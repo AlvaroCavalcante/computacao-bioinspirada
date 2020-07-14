@@ -117,7 +117,7 @@ def aco(n_formigas, dataframe, epocas = 5):
         formigas = iniciar_colonia_aleatoria(n_formigas, len(dataframe) - 1)
         distancia_total_formigas = [0] * n_formigas # inicializa a distância percorrida por cada formiga
                
-        while execucoes < len(formigas):    
+        while execucoes < len(dataframe) -1:    
             distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
             
             movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
