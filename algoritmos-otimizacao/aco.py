@@ -5,7 +5,6 @@ import pandas as pd
 import itertools
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/algoritmos-otimizacao/dataset/berlin.csv')
-# dataframe['index'] = list(map(lambda x: x, dataframe.index))
 
 def get_distancia_entre_pontos(cidade1, cidade2): # distância euclidiana 
     diferenca_coord = (cidade1[0] - cidade2[0])**2 + (cidade1[1] - cidade2[1])**2
@@ -85,10 +84,10 @@ def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa=1, b
 def movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formigas, distancia_percorrida, Q=100, p=0.5):
     for i in range(len(formigas)):
         formigas[i].append(movimento_formigas[i]) # aplica a movimentação da formiga
-        feromonios_depositados = Q / distancia_percorrida[i] # calcula a quantidade de feromônios
+        # feromonios_depositados = Q / distancia_percorrida[i] # calcula a quantidade de feromônios
         # aplica os feromônios nas arestas da cidade
-        arestas_cidades_temporarias[movimento_formigas[i]] = \
-            [(1 - p) * arestas_cidades_temporarias[movimento_formigas[i]][0] + feromonios_depositados]
+        # arestas_cidades_temporarias[movimento_formigas[i]] = \
+        #     [(1 - p) * arestas_cidades_temporarias[movimento_formigas[i]][0] + feromonios_depositados]
 
     return formigas
 
@@ -108,7 +107,7 @@ def aco(n_formigas, dataframe, epocas = 5):
         # Aresta temporária é para ir fazendo a soma dos feromônios de forma a não afetar o movimento das formigas
         arestas_cidades_temporarias = arestas_cidades.copy()
         
-        while execucoes < len(dataframe) -1:    
+        while execucoes < len(formigas):    
             distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
             
             movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
