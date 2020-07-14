@@ -5,7 +5,7 @@ import pandas as pd
 import itertools
 
 dataframe = pd.read_csv('/home/alvaro/Documentos/mestrado/computação bio/algoritmos-otimizacao/dataset/berlin.csv')
-dataframe['index'] = list(map(lambda x: x, dataframe.index))
+# dataframe['index'] = list(map(lambda x: x, dataframe.index))
 
 def get_distancia_entre_pontos(cidade1, cidade2): # distância euclidiana 
     diferenca_coord = (cidade1[0] - cidade2[0])**2 + (cidade1[1] - cidade2[1])**2
@@ -15,7 +15,7 @@ def get_distancia_entre_pontos(cidade1, cidade2): # distância euclidiana
 def get_dicionario_cidades(combinacao_cidades):
     cidades = {}
     for i in combinacao_cidades:
-        cidades[i] = [0.000001] 
+        cidades[i] = [0.000001] # quantidade inicial (sugerida) de feromônios
 
     return cidades
 
@@ -23,7 +23,7 @@ def iniciar_colonia_aleatoria(n_formigas, n_cidades):
     colonia = []
 
     for i in range(n_formigas):
-        colonia.append([(random.randint(0, n_cidades),)])
+        colonia.append([(random.randint(1, n_cidades),)])
 
     return colonia
 
@@ -31,7 +31,7 @@ def iniciar_colonia(n_formigas):
     colonia = []
 
     for i in range(n_formigas):
-        colonia.append([(0,)])
+        colonia.append([(1,)])
 
     return colonia
 
@@ -87,12 +87,12 @@ def movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formiga
         formigas[i].append(movimento_formigas[i]) # aplica a movimentação da formiga
         feromonios_depositados = Q / distancia_percorrida[i] # calcula a quantidade de feromônios
         # aplica os feromônios nas arestas da cidade
-        arestas_cidades_temporarias[movimento_formigas[i]] = \ 
+        arestas_cidades_temporarias[movimento_formigas[i]] = \
             [(1 - p) * arestas_cidades_temporarias[movimento_formigas[i]][0] + feromonios_depositados]
 
     return formigas
 
-def aco(n_formigas, dataframe, epocas = 15):
+def aco(n_formigas, dataframe, epocas = 5):
     combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
 
     arestas_cidades = get_dicionario_cidades(combinacao_cidades)
@@ -102,10 +102,12 @@ def aco(n_formigas, dataframe, epocas = 15):
 
     for i in range(epocas):
         execucoes = 0
-        formigas = iniciar_colonia(n_formigas)
+        formigas = iniciar_colonia_aleatoria(n_formigas, len(dataframe) - 1)
         distancia_total_formigas = [0] * n_formigas # inicializa a distância percorrida por cada formiga
+        
+        # Aresta temporária é para ir fazendo a soma dos feromônios de forma a não afetar o movimento das formigas
         arestas_cidades_temporarias = arestas_cidades.copy()
-
+        
         while execucoes < len(dataframe) -1:    
             distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
             
@@ -117,10 +119,13 @@ def aco(n_formigas, dataframe, epocas = 15):
 
             execucoes += 1
         
-        arestas_cidades = arestas_cidades_temporarias
-        melhor_distancia.append(min(distancia_total_formigas)) # TODO: Somar os feromônios de cada aresta
+        arestas_cidades = arestas_cidades_temporarias # atualizar a lista de feromônios
+        melhor_distancia.append(min(distancia_total_formigas)) 
         melhor_caminho = formigas[distancia_total_formigas.index(min(distancia_total_formigas))]
 
     return melhor_distancia, melhor_caminho
 
 melhor_distancia, melhor_caminho = aco(51, dataframe)
+
+print('Melhor distância', melhor_distancia)
+print('Melhor caminho', melhor_caminho)
