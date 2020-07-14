@@ -81,15 +81,26 @@ def get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades, alfa=1, b
                
     return proximos_movimentos, distancias_percorridas
 
-def movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formigas, distancia_percorrida, Q=100, p=0.5):
+def movimentar_formigas(formigas, movimento_formigas):
     for i in range(len(formigas)):
         formigas[i].append(movimento_formigas[i]) # aplica a movimentação da formiga
-        # feromonios_depositados = Q / distancia_percorrida[i] # calcula a quantidade de feromônios
-        # aplica os feromônios nas arestas da cidade
-        # arestas_cidades_temporarias[movimento_formigas[i]] = \
-        #     [(1 - p) * arestas_cidades_temporarias[movimento_formigas[i]][0] + feromonios_depositados]
 
     return formigas
+
+def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=100, p=0.5):
+    count = 0
+    for formiga in formigas:
+        formiga = formiga[1:len(formiga)-1]
+        for aresta in formiga:
+            feromonios_depositados = Q / distancia_total_formigas[count] # calcula a quantidade de feromônios
+            # aplica os feromônios nas arestas da cidade
+            arestas_cidades[aresta] = \
+                [(1 - p) * arestas_cidades[aresta][0] + feromonios_depositados]
+
+        count += 1
+
+    return arestas_cidades 
+
 
 def aco(n_formigas, dataframe, epocas = 5):
     combinacao_cidades = list(itertools.permutations(dataframe['index'].values, 2))
@@ -103,22 +114,19 @@ def aco(n_formigas, dataframe, epocas = 5):
         execucoes = 0
         formigas = iniciar_colonia_aleatoria(n_formigas, len(dataframe) - 1)
         distancia_total_formigas = [0] * n_formigas # inicializa a distância percorrida por cada formiga
-        
-        # Aresta temporária é para ir fazendo a soma dos feromônios de forma a não afetar o movimento das formigas
-        arestas_cidades_temporarias = arestas_cidades.copy()
-        
+               
         while execucoes < len(formigas):    
             distancia_cidades_vizinhas = get_distancia_cidades_vizinhas(formigas, dataframe)
             
             movimento_formigas, distancia_percorrida = get_proximo_movimento(distancia_cidades_vizinhas, arestas_cidades)
                 
-            formigas = movimentar_formigas(formigas, arestas_cidades_temporarias, movimento_formigas, distancia_percorrida)
+            formigas = movimentar_formigas(formigas, movimento_formigas)
             
             distancia_total_formigas = list(map(lambda x, y: x + y, distancia_total_formigas, distancia_percorrida))
 
             execucoes += 1
         
-        arestas_cidades = arestas_cidades_temporarias # atualizar a lista de feromônios
+        arestas_cidades = atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades) # atualizar a lista de feromônios
         melhor_distancia.append(min(distancia_total_formigas)) 
         melhor_caminho = formigas[distancia_total_formigas.index(min(distancia_total_formigas))]
 
