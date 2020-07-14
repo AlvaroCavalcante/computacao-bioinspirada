@@ -142,7 +142,7 @@ def get_coordenadas_melhor_rota(dataframe, melhor_caminho):
         melhor_x.append(cidade_inicial['x'].values[0])
         melhor_y.append(cidade_inicial['y'].values[0])
 
-        if len(caminho == 2):
+        if len(caminho) == 2:
             cidade_final = dataframe[dataframe['index'] == caminho[1]]
             melhor_x.append(cidade_final['x'].values[0])
             melhor_y.append(cidade_final['y'].values[0])
