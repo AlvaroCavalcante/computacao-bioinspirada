@@ -114,6 +114,7 @@ def aco(n_formigas, dataframe, epocas = 5):
     arestas_cidades = get_dicionario_cidades(combinacao_cidades)
 
     melhor_distancia = []
+    distancia_media = []
     melhor_caminho = []
 
     for i in range(epocas):
@@ -134,9 +135,10 @@ def aco(n_formigas, dataframe, epocas = 5):
         
         arestas_cidades = atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades) # atualizar a lista de feromônios
         melhor_distancia.append(min(distancia_total_formigas)) 
+        distancia_media.append(sum(distancia_total_formigas) / len(distancia_total_formigas))
         melhor_caminho = formigas[distancia_total_formigas.index(min(distancia_total_formigas))]
 
-    return melhor_distancia, melhor_caminho
+    return melhor_distancia, melhor_caminho, distancia_media
 
 def get_coordenadas_melhor_rota(dataframe, melhor_caminho):
     melhor_x = []
@@ -158,11 +160,16 @@ def mostrar_grafico_resultados(dataframe, melhor_x, melhor_y):
     plt.plot(melhor_x, melhor_y, '.r-') 
     plt.show()
 
-melhor_distancia, melhor_caminho = aco(51, dataframe)
+melhor_distancia, melhor_caminho, distancia_media = aco(51, dataframe)
 
 melhor_x, melhor_y = get_coordenadas_melhor_rota(dataframe, melhor_caminho)
 
 mostrar_grafico_resultados(dataframe, melhor_x, melhor_y)
 
+plt.plot(distancia_media, color = 'orange')
+plt.plot(melhor_distancia, color = 'blue')
+plt.show()
+
 print('Melhor distância', melhor_distancia)
+print('Distância média', distancia_media)
 print('Melhor caminho', melhor_caminho)
