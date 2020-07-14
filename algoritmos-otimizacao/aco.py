@@ -101,7 +101,7 @@ def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=
                 min(distancia_total_formigas) == distancia_total_formigas[count] else 0
 
 # TODO: COLOCAR UM +=
-            arestas_cidades[aresta] = \
+            arestas_cidades[aresta] += \
                 [(1 - p) * arestas_cidades[aresta][0] + feromonios_depositados + feromonio_formiga_elitista]
 
         count += 1
@@ -179,6 +179,5 @@ plt.plot(distancia_media, color = 'orange')
 plt.plot(melhor_distancia, color = 'blue')
 plt.show()
 
-print('Melhor distância', melhor_distancia)
-print('Distância média', distancia_media)
-print('Melhor caminho', melhor_caminho)
+print('Melhor distância', min(melhor_distancia))
+print('Distância média', min(distancia_media))
