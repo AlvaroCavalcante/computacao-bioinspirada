@@ -20,7 +20,7 @@ def get_dicionario_cidades(combinacao_cidades):
 
 def iniciar_colonia_aleatoria(n_formigas, n_cidades):
     colonia = []
-
+    random.seed(0)
     for i in range(n_formigas):
         colonia.append([(random.randint(1, n_cidades),)])
 
