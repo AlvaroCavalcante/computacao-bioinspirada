@@ -19,9 +19,9 @@ def get_dicionario_cidades(combinacao_cidades):
 
     return cidades
 
-def iniciar_colonia_aleatoria(n_formigas, n_cidades):
+def iniciar_colonia_aleatoria(n_formigas, n_cidades, seed):
     colonia = []
-    random.seed(0)
+    random.seed(seed)
 
     for i in range(n_formigas):
         colonia.append([(random.randint(1, n_cidades),)])
@@ -119,7 +119,7 @@ def aco(n_formigas, dataframe, epocas = 5):
 
     for i in range(epocas):
         execucoes = 0
-        formigas = iniciar_colonia_aleatoria(n_formigas, len(dataframe) - 1)
+        formigas = iniciar_colonia_aleatoria(n_formigas, len(dataframe) - 1, random.randint(0, 100))
         distancia_total_formigas = [0] * n_formigas # inicializa a distância percorrida por cada formiga
                
         while execucoes < len(dataframe) -1:    
@@ -160,7 +160,7 @@ def mostrar_grafico_resultados(dataframe, melhor_x, melhor_y):
     plt.plot(melhor_x, melhor_y, '.r-') 
     plt.show()
 
-melhor_distancia, melhor_caminho, distancia_media = aco(51, dataframe)
+melhor_distancia, melhor_caminho, distancia_media = aco(51, dataframe, 5)
 
 melhor_x, melhor_y = get_coordenadas_melhor_rota(dataframe, melhor_caminho)
 
