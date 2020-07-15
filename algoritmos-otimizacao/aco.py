@@ -100,8 +100,7 @@ def atualizar_feromonios(formigas, distancia_total_formigas, arestas_cidades, Q=
             feromonio_formiga_elitista = b*feromonios_depositados if \
                 min(distancia_total_formigas) == distancia_total_formigas[count] else 0
 
-# TODO: COLOCAR UM +=
-            arestas_cidades[aresta] += \
+            arestas_cidades[aresta] = \
                 [(1 - p) * arestas_cidades[aresta][0] + feromonios_depositados + feromonio_formiga_elitista]
 
         count += 1
