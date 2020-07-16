@@ -162,8 +162,8 @@ def mostrar_grafico_resultados(dataframe, melhor_x, melhor_y):
 
 melhor_distancia, melhor_caminho, distancia_media = [99999],[(0)],[99999]
 
-for i in range(5):
-    resultado_aco = aco(51, dataframe, 5)
+for i in range(1):
+    resultado_aco = aco(51, dataframe, 2)
 
     distancia_media = resultado_aco[2] if min(resultado_aco[0]) < min(melhor_distancia) else distancia_media
     melhor_caminho = resultado_aco[1] if min(resultado_aco[0]) < min(melhor_distancia) else melhor_caminho
@@ -176,6 +176,7 @@ mostrar_grafico_resultados(dataframe, melhor_x, melhor_y)
 
 plt.plot(distancia_media, color = 'orange')
 plt.plot(melhor_distancia, color = 'blue')
+plt.legend(['Distância média', 'Menor distância'])
 plt.show()
 
 print('Melhor distância', min(melhor_distancia))
