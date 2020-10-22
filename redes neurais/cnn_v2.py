@@ -28,8 +28,8 @@ train_dataset = generate_dataset('/home/alvaro/Documentos/dataset/training_set/g
 test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/cachorro/', test_dataset, 3)
 test_dataset = generate_dataset('/home/alvaro/Documentos/dataset/test_set/gato/', test_dataset, 3)
 
-kernel_sharpen = np.asmatrix([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
-kernel_outline = np.asmatrix([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
+kernel_sharpen = np.array([[0, -1, 0], [-1,5,-1], [0,-1,0]]) 
+kernel_outline = np.array([[-1, -1, -1], [-1,8,-1], [-1,-1,-1]])
 
 def show_image(image):
     imgplot = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
@@ -59,10 +59,8 @@ def convolution(image, kernel, stride, padding = False):
 
         while final_column <= image.shape[1]:
             kernel_area = image[initial_line:final_line, initial_column:final_column]
-                        
-            kernel_result = np.dot(kernel, kernel_area)
-            
-            matrix_line.append(np.sum(kernel_result))
+                                   
+            matrix_line.append(np.sum(kernel * kernel_area))
         
             initial_column += stride 
             final_column += stride
